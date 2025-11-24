@@ -1,0 +1,11 @@
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/bin/Debug/net9.0/Planner.Domain.deps.json
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/bin/Debug/net9.0/Planner.Domain.dll
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/bin/Debug/net9.0/Planner.Domain.pdb
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/Planner.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/Planner.Domain.AssemblyInfoInputs.cache
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/Planner.Domain.AssemblyInfo.cs
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/Planner.Domain.csproj.CoreCompileInputs.cache
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/Planner.Domain.dll
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/refint/Planner.Domain.dll
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/Planner.Domain.pdb
+/Users/alijafari/Desktop/Repositories/PlannerApp/Planner.Domain/obj/Debug/net9.0/ref/Planner.Domain.dll
