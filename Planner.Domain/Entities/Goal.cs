@@ -16,13 +16,26 @@ public class Goal
         Id = Guid.NewGuid();
         this.Title = Title;
         this.Description = Description;
-        CreatedAt = DateTime.Now;
-        this.DueDate = DueDate;
+        CreatedAt = DateTime.UtcNow;
+        this.DueDate = DueDate.ToUniversalTime();
         IsCompleted = false;
     }
 
     public void MarkAsCompleted()
     {
         IsCompleted = true;
+    }
+
+    public void Update(string title, string description, DateTime dueDate, bool isCompleted)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            throw new ArgumentException("Title cannot be empty.", nameof(title));
+        }
+
+        Title = title;
+        Description = description;
+        DueDate = dueDate;
+        IsCompleted = isCompleted;
     }
 }
