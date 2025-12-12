@@ -20,38 +20,45 @@ public class GoalController : ControllerBase
         this.goalService = goalService;
     }
 
-    [HttpGet]
+    [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll()
     {
         ServiceResult<IEnumerable<GoalDto>> result = await goalService.GetAllAsync();
         return Ok(result.ToResponseModel());
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpPost("Get")]
+    public async Task<IActionResult> Get([FromBody] Guid id)
     {
         ServiceResult<GoalDto> result = await goalService.GetByIdAsync(id);
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateGoalRequestModel dto)
+    [HttpPost("Create")]
+    public async Task<IActionResult> Create([FromBody] CreateGoalRequestModel dto)
     {
         ServiceResult<GoalDto> result = await goalService.CreateAsync(dto.ToDto());
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(UpdateGoalDto dto)
+    [HttpPost("Update")]
+    public async Task<IActionResult> Update([FromBody] UpdateGoalDto dto)
     {
         ServiceResult<bool> result = await goalService.UpdateAsync(dto);
         return Ok(result.ToResponseModel());
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpPost("Delete")]
+    public async Task<IActionResult> Delete([FromBody] Guid id)
     {
         ServiceResult<bool> result = await goalService.DeleteAsync(id);
+        return Ok(result.ToResponseModel());
+    }
+
+    [HttpPost("Complete")]
+    public async Task<IActionResult> Complete([FromBody] Guid id)
+    {
+        ServiceResult<bool> result = await goalService.CompleteAsync(id);
         return Ok(result.ToResponseModel());
     }
 }

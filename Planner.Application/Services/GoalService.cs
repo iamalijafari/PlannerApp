@@ -60,4 +60,15 @@ public class GoalService : IGoalService
         result.SetResult(true);
         return result;
     }
+
+    public async Task<ServiceResult<bool>> CompleteAsync(Guid id)
+    {
+        ServiceResult<bool> result = new();
+        Goal goal = await goalRepository.GetByIdAsync(id);
+        goal.Update(goal.Title, goal.Description, goal.DueDate, true);
+        await goalRepository.UpdateAsync(goal);
+        await goalRepository.SaveChangesAsync();
+        result.SetResult(true);
+        return result;
+    }
 }

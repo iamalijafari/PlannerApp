@@ -10,4 +10,5 @@ public interface IGoalService
     Task<ServiceResult<GoalDto>> CreateAsync(CreateGoalDto dto);
     Task<ServiceResult<bool>> UpdateAsync(UpdateGoalDto dto);
     Task<ServiceResult<bool>> DeleteAsync(Guid id);
+    Task<ServiceResult<bool>> CompleteAsync(Guid id);
 }

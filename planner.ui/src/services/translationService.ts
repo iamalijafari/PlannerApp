@@ -1,18 +1,24 @@
 import { TranslationRequestModel } from "@/types/translation-request-model";
-import { getEnv } from "@/src/config/env";
 
-const API_BASE = getEnv("NEXT_PUBLIC_TRANSLATION_API_URL");
+export async function translateApi(
+  model: TranslationRequestModel
+): Promise<string> {
+  const apiUrl = process.env.NEXT_PUBLIC_TRANSLATION_API_URL;
 
-export async function translateApi(model: TranslationRequestModel): Promise<string> {
-  const response = await fetch(API_BASE, {
+  if (!apiUrl) {
+    throw new Error("NEXT_PUBLIC_TRANSLATION_API_URL is missing");
+  }
+
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(model)
+    body: JSON.stringify(model),
   });
 
   if (!response.ok) {
-    throw new Error("Translation API error");
+    console.error("Translation API error:", response.status, response.statusText);
+    throw new Error("Translation request failed");
   }
 
-  return response.text();
+  return await response.text();
 }

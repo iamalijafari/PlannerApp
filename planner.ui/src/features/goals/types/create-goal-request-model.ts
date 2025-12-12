@@ -1,5 +1,5 @@
 export interface CreateGoalRequestModel {
-    Title : string;
-    Description : string;
-    DueDate : string;
+    title : string;
+    description : string;
+    dueDate : string;
 }

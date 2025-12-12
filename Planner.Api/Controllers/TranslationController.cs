@@ -15,8 +15,8 @@ public class TranslationController : ControllerBase
         this.translationService = translationService;    
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Translate(TranslationRequestModel model)
+    [HttpPost("Translate")]
+    public async Task<IActionResult> Translate([FromBody] TranslationRequestModel model)
     {
         string result = await translationService.Translate(model.MessageKey, model.Language);
         return Ok(result);

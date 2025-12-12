@@ -18,65 +18,36 @@ export default function GoalList({ goals, onComplete, onDelete }: GoalListProps)
   const [modalMessage, setModalMessage] = useState("");
 
   const handleCompleteClick = async (id: string) => {
-    try {
-      await onComplete(id);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : t(MessageKey.ServerError);
-      setModalMessage(message);
+    try { await onComplete(id); } 
+    catch (err: unknown) {
+      setModalMessage(err instanceof Error ? err.message : t(MessageKey.ServerError));
       setModalOpen(true);
     }
   };
 
   const handleDeleteClick = async (id: string) => {
-    try {
-      await onDelete(id);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : t(MessageKey.ServerError);
-      setModalMessage(message);
+    try { await onDelete(id); } 
+    catch (err: unknown) {
+      setModalMessage(err instanceof Error ? err.message : t(MessageKey.ServerError));
       setModalOpen(true);
     }
   };
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4">{t(MessageKey.GoalListTitle)}</h2>
+      <h2>{t(MessageKey.GoalListTitle)}</h2>
+      {goals.map((g) => (
+        <div key={g.id}>
+          <h3>{g.title}</h3>
+          <p>{g.description}</p>
+          <p>{t(MessageKey.DueDate)}: {g.dueDate}</p>
 
-      <div className="space-y-3">
-        {goals.map((g) => (
-          <div key={g.Id} className="p-4 border rounded shadow-sm bg-white">
-            <h3 className="font-bold text-lg">{g.Title}</h3>
-            <p className="text-sm text-gray-700">{g.Description}</p>
-            <p className="text-xs text-gray-500">
-              {t(MessageKey.DueDate)}: {g.DueDate}
-            </p>
+          {!g.isCompleted && <button onClick={() => handleCompleteClick(g.id)}>{t(MessageKey.Complete)}</button>}
+          <button onClick={() => handleDeleteClick(g.id)}>{t(MessageKey.Delete)}</button>
+        </div>
+      ))}
 
-            {!g.IsCompleted && (
-              <button
-                onClick={() => handleCompleteClick(g.Id)}
-                className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 mr-2"
-              >
-                {t(MessageKey.Complete)}
-              </button>
-            )}
-
-            <button
-              onClick={() => handleDeleteClick(g.Id)}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-            >
-              {t(MessageKey.Delete)}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={t(MessageKey.ErrorTitle)}
-        message={modalMessage}
-      />
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={t(MessageKey.ErrorTitle)} message={modalMessage} />
     </>
   );
 }
