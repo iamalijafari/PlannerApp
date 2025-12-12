@@ -1,7 +1,4 @@
-namespace Planner.Application.Enumerations;
-
-public enum MessageKey
-{
+export enum MessageKey {
     ServerError = 0,
     Title = 1,
     Description = 2,

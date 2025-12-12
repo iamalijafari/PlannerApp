@@ -18,8 +18,6 @@ public class GoalService : IGoalService
     public async Task<ServiceResult<IEnumerable<GoalDto>>> GetAllAsync()
     {
         ServiceResult<IEnumerable<GoalDto>> result = new();
-        result.SetError(MessageKey.Moz);
-        return result;
         IEnumerable<Goal> goals = await goalRepository.GetAllAsync();
         result.SetResult(goals.ToDto());
         return result;

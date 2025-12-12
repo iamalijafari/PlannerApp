@@ -1,4 +1,12 @@
 <Messages>
   <Message key="ServerError">خطای داخلی سرور</Message>
-  <Message key="Moz">موز</Message>
+  <Message key="Title">عنوان</Message>
+  <Message key="Description">توضیحات</Message>
+  <Message key="DueDate">تاریخ انجام</Message>
+  <Message key="Save">ثبت</Message>
+  <Message key="ErrorTitle">خطا</Message>
+  <Message key="GoalFormTitle">هدف جدید</Message>
+  <Message key="GoalListTitle">لیست اهداف</Message>
+  <Message key="Delete">حذف</Message>
+  <Message key="Complete">کامل شده</Message>
 </Messages>

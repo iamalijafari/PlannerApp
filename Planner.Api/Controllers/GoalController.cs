@@ -3,7 +3,9 @@ using Planner.Application.Interfaces.Services;
 using Planner.Application.DTOs.Goal;
 using Planner.Application.DTOs.Utility;
 using System.Collections.Generic;
-using Planner.Api.Mappers.Utilities;
+using Planner.Api.Mappers.Goal;
+using Planner.Api.Mappers.General;
+using Planner.Api.DTOs.Requests.Goal;
 
 namespace Planner.Api.Controllers;
 
@@ -19,37 +21,37 @@ public class GoalController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IResult> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         ServiceResult<IEnumerable<GoalDto>> result = await goalService.GetAllAsync();
-        return result.ToResult();
+        return Ok(result.ToResponseModel());
     }
 
     [HttpGet("{id}")]
-    public async Task<IResult> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
         ServiceResult<GoalDto> result = await goalService.GetByIdAsync(id);
-        return result.ToResult();
+        return Ok(result.ToResponseModel());
     }
 
     [HttpPost]
-    public async Task<IResult> Create(CreateGoalDto dto)
+    public async Task<IActionResult> Create(CreateGoalRequestModel dto)
     {
-        ServiceResult<GoalDto> result = await goalService.CreateAsync(dto);
-        return result.ToResult();
+        ServiceResult<GoalDto> result = await goalService.CreateAsync(dto.ToDto());
+        return Ok(result.ToResponseModel());
     }
 
     [HttpPut("{id}")]
-    public async Task<IResult> Update(UpdateGoalDto dto)
+    public async Task<IActionResult> Update(UpdateGoalDto dto)
     {
         ServiceResult<bool> result = await goalService.UpdateAsync(dto);
-        return result.ToResult();
+        return Ok(result.ToResponseModel());
     }
 
     [HttpDelete("{id}")]
-    public async Task<IResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         ServiceResult<bool> result = await goalService.DeleteAsync(id);
-        return result.ToResult();
+        return Ok(result.ToResponseModel());
     }
 }

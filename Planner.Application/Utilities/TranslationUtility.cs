@@ -33,9 +33,9 @@ public class TranslationUtility : ITranslationUtility
         }
     }
 
-    public string Translate(MessageKey key, Language lang)
+    public async Task<string> Translate(MessageKey key, Language lang)
     {
-        var stringKey = key.ToString();
+        string stringKey = key.ToString();
 
         if (languages[lang.ToString()].TryGetValue(stringKey, out string? value))
         {

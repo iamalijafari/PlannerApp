@@ -6,7 +6,7 @@ using Planner.Application.Interfaces.Utilities;
 using Planner.Infrastructure.Repositories;
 using Planner.Application.Utilities;
 using Planner.Api.Middlewares;
-using Planner.Api.Mappers.Utilities;
+using Planner.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,13 +19,12 @@ builder.Services.AddSingleton<ITranslationUtility, TranslationUtility>();
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
 
 builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<ITranslationService, TranslationService>();
 
 builder.Services.AddDbContext<PlannerDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
-
-UtilityMappings.ServiceProvider = app.Services;
 
 if (app.Environment.IsDevelopment())
 {

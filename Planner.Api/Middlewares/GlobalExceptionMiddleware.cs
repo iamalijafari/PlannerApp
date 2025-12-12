@@ -32,7 +32,7 @@ public class GlobalExceptionMiddleware
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
 
-            string message = translationUtility.Translate(MessageKey.ServerError, Language.fa);
+            string message = await translationUtility.Translate(MessageKey.ServerError, Language.fa);
 
             await context.Response.WriteAsJsonAsync(new
             {

@@ -1,4 +1,12 @@
 <Messages>
   <Message key="ServerError">Internal server error</Message>
-  <Message key="Moz">moooz</Message>
+  <Message key="Title">Title</Message>
+  <Message key="Description">Description</Message>
+  <Message key="DueDate">Due Date</Message>
+  <Message key="Save">Save</Message>
+  <Message key="ErrorTitle">Error</Message>
+  <Message key="GoalFormTitle">New Goal</Message>
+  <Message key="GoalListTitle">Goals</Message>
+  <Message key="Delete">Delete</Message>
+  <Message key="Complete">Complete</Message>
 </Messages>
