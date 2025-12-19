@@ -1,3 +1,4 @@
+import "./globals.css";
 import { LanguageProvider } from "@/context/languageContext";
 import { TranslationProvider } from "@/context/translationContext";
 import LanguageSelector from "@/components/LanguageSelector";

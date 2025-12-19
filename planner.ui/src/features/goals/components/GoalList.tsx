@@ -35,17 +35,34 @@ export default function GoalList({ goals, onComplete, onDelete }: GoalListProps)
 
   return (
     <>
-      <h2>{t(MessageKey.GoalListTitle)}</h2>
-      {goals.map((g) => (
-        <div key={g.id}>
-          <h3>{g.title}</h3>
-          <p>{g.description}</p>
-          <p>{t(MessageKey.DueDate)}: {g.dueDate}</p>
+      <h2 className="text-2xl font-semibold mb-4">{t(MessageKey.GoalListTitle)}</h2>
 
-          {!g.isCompleted && <button onClick={() => handleCompleteClick(g.id)}>{t(MessageKey.Complete)}</button>}
-          <button onClick={() => handleDeleteClick(g.id)}>{t(MessageKey.Delete)}</button>
-        </div>
-      ))}
+      <div className="space-y-4">
+        {goals.map((g) => (
+          <div
+            key={g.id}
+            className={`p-4 rounded-lg shadow-sm bg-white dark:bg-[#0b0b0b] flex items-start justify-between ${g.isCompleted ? "opacity-60" : ""}`}
+          >
+            <div className="pr-4">
+              <h3 className={`text-lg font-medium ${g.isCompleted ? "line-through" : ""}`}>{g.title}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{g.description}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{t(MessageKey.DueDate)}: {g.dueDate}</p>
+            </div>
+
+            <div className="flex flex-col items-end gap-2">
+              {!g.isCompleted && (
+                <button className="btn text-sm" onClick={() => handleCompleteClick(g.id)}>{t(MessageKey.Complete)}</button>
+              )}
+              <button
+                className="text-sm inline-flex items-center justify-center px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700"
+                onClick={() => handleDeleteClick(g.id)}
+              >
+                {t(MessageKey.Delete)}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={t(MessageKey.ErrorTitle)} message={modalMessage} />
     </>

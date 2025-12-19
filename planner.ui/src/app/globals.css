@@ -24,3 +24,20 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Base utilities and component resets */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700;
+}
+
+.card {
+  @apply bg-white dark:bg-[#0b0b0b] rounded-lg shadow p-4;
+}
+
+.container {
+  max-width: 48rem; /* matches max-w-2xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

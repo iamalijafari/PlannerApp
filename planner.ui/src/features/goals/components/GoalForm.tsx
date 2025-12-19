@@ -6,6 +6,7 @@ import { useApiResponse } from "@/utils/use-api-response";
 import Modal from "@/components/Modal";
 import { useTranslation } from "@/context/translationContext";
 import { MessageKey } from "@/types/message-key";
+import DatePicker from "@/components/DatePicker";
 
 interface GoalFormProps {
   onSubmit: (model: CreateGoalRequestModel) => void | Promise<void>;
@@ -40,14 +41,30 @@ export default function GoalForm({ onSubmit }: GoalFormProps) {
 
   return (
     <>
-      <form onSubmit={submitHandler} className="bg-white p-4 rounded shadow-md mb-4">
+      <form onSubmit={submitHandler} className="card mb-6">
         <h2 className="text-xl font-bold mb-4">{t(MessageKey.GoalFormTitle)}</h2>
 
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required placeholder={t(MessageKey.Title)} />
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} required placeholder={t(MessageKey.Description)} />
-        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
+        <input
+          className="w-full border border-gray-200 dark:border-gray-700 rounded-md p-2 mb-3 bg-transparent"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          placeholder={t(MessageKey.Title)}
+        />
 
-        <button type="submit">{t(MessageKey.Save)}</button>
+        <textarea
+          className="w-full border border-gray-200 dark:border-gray-700 rounded-md p-2 mb-3 bg-transparent"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+          placeholder={t(MessageKey.Description)}
+        />
+
+        <DatePicker value={dueDate} onChange={(d) => setDueDate(d)} />
+
+        <div className="flex justify-end">
+          <button type="submit" className="btn">{t(MessageKey.Save)}</button>
+        </div>
       </form>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={t(MessageKey.ErrorTitle)} message={modalMessage} />

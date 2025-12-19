@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import GoalForm from "@/src/features/goals/components/GoalForm";
 import GoalList from "@/src/features/goals/components/GoalList";
+import Modal from "@/components/Modal";
 import { GoalResponseModel } from "@/src/features/goals/types/goal-response-model";
 import { CreateGoalRequestModel } from "@/src/features/goals/types/create-goal-request-model";
 import { useApiResponse } from "@/utils/use-api-response";
@@ -144,9 +145,7 @@ export default function GoalsPage() {
         onDelete={handleDelete}
       />
 
-      {modalOpen && (
-        <div>{modalMessage}</div>
-      )}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={"Notice"} message={modalMessage} />
     </div>
   );
 }
