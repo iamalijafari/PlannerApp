@@ -1,24 +1,26 @@
 namespace Planner.Domain.Entities;
 
-public class Goal
+public class YearlyGoal
 {
     public Guid Id { get; private set; }
+    public Guid GoalId { get; set; }
+    public Goal Goal { get; private set; }
     public string Title { get; private set; }
     public string Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime DueDate { get; private set; }
     public bool IsCompleted { get; private set; }
-    public ICollection<YearlyGoal> YearlyGoals { get; private set; } = new List<YearlyGoal>();
 
-    private Goal() { }
+    private YearlyGoal() { }
 
-    public Goal(string Title, string Description, DateTime DueDate)
+    public YearlyGoal(Guid goalId, string title, string description, DateTime dueDate)
     {
         Id = Guid.NewGuid();
-        this.Title = Title;
-        this.Description = Description;
+        GoalId = goalId;
+        Title = title;
+        Description = description;
         CreatedAt = DateTime.UtcNow;
-        this.DueDate = DueDate.ToUniversalTime();
+        DueDate = dueDate.ToUniversalTime();
         IsCompleted = false;
     }
 

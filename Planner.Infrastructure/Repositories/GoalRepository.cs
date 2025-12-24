@@ -1,5 +1,4 @@
 using Planner.Application.Interfaces.Repositories;
-using Planner.Domain;
 using Microsoft.EntityFrameworkCore;
 using Planner.Infrastructure.Persistence;
 

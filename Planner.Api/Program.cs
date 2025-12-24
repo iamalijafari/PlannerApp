@@ -28,8 +28,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ITranslationUtility, TranslationUtility>();
 
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+builder.Services.AddScoped<IYearlyGoalRepository, YearlyGoalRepository>();
 
 builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<IYearlyGoalService, YearlyGoalService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 
 builder.Services.AddDbContext<PlannerDbContext>(options =>

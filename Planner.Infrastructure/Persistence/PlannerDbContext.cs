@@ -11,6 +11,7 @@ public class PlannerDbContext : DbContext
     }
 
     public DbSet<Goal> Goals => Set<Goal>();
+    public DbSet<YearlyGoal> YearlyGoals => Set<YearlyGoal>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -18,16 +19,21 @@ public class PlannerDbContext : DbContext
 
         modelBuilder.Entity<Goal>(entity =>
         {
-            entity.HasKey(t => t.Id);
-            entity.Property(t => t.Title)
-                  .IsRequired()
-                  .HasMaxLength(200);
-            entity.Property(t => t.IsCompleted)
-                  .IsRequired();
-            entity.Property(t => t.DueDate)
-                  .IsRequired();
-            entity.Property(t => t.CreatedAt)
-                  .IsRequired();
+            entity.HasKey(g => g.Id);
+            entity.Property(g => g.Title).IsRequired().HasMaxLength(200);
+            entity.Property(g => g.CreatedAt).IsRequired();
+            entity.Property(g => g.DueDate).IsRequired();
+            entity.Property(g => g.IsCompleted).IsRequired();
+            entity.HasMany(g => g.YearlyGoals).WithOne(sg => sg.Goal).HasForeignKey(sg => sg.GoalId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<YearlyGoal>(entity =>
+        {
+            entity.HasKey(sg => sg.Id);
+            entity.Property(sg => sg.Title).IsRequired().HasMaxLength(200);
+            entity.Property(sg => sg.CreatedAt).IsRequired();
+            entity.Property(sg => sg.DueDate).IsRequired();
+            entity.Property(sg => sg.IsCompleted).IsRequired();
         });
     }
 }
