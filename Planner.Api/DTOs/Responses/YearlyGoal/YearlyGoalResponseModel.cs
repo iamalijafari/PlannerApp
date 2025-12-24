@@ -1,6 +1,6 @@
 namespace Planner.Api.DTOs.Responses.YearlyGoal;
 
-public class SubGoalResponseModel
+public class YearlyGoalResponseModel
 {
     public Guid Id { get; set; }
     public Guid GoalId { get; set; }

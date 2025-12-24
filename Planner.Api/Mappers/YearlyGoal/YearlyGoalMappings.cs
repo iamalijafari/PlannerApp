@@ -3,34 +3,35 @@ using Planner.Api.DTOs.Responses.Utility;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.DTOs.YearlyGoal;
 using System.Collections.Generic;
+using System.Linq;
 using Planner.Api.DTOs.Requests.YearlyGoal;
 
 namespace Planner.Api.Mappers.YearlyGoal;
 
-public static class SubGoalMappings
+public static class YearlyGoalMappings
 {
     #region ToResponseModel
-    public static ResponseModel<IEnumerable<SubGoalResponseModel>> ToResponseModel(this ServiceResult<IEnumerable<SubGoalDto>> dtos) =>
-        new ResponseModel<IEnumerable<SubGoalResponseModel>>
+    public static ResponseModel<IEnumerable<YearlyGoalResponseModel>> ToResponseModel(this ServiceResult<IEnumerable<YearlyGoalDto>> dtos) =>
+        new ResponseModel<IEnumerable<YearlyGoalResponseModel>>
         {
             Success = dtos.Success,
             Result = dtos.Result?.ToResponseModel(),
             MessageKey = dtos.MessageKey
         };
 
-    public static ResponseModel<SubGoalResponseModel> ToResponseModel(this ServiceResult<SubGoalDto> dto) =>
-        new ResponseModel<SubGoalResponseModel>
+    public static ResponseModel<YearlyGoalResponseModel> ToResponseModel(this ServiceResult<YearlyGoalDto> dto) =>
+        new ResponseModel<YearlyGoalResponseModel>
         {
             Success = dto.Success,
             Result = dto.Result?.ToResponseModel(),
             MessageKey = dto.MessageKey
         };
 
-    public static IEnumerable<SubGoalResponseModel> ToResponseModel(this IEnumerable<SubGoalDto> dtos) =>
+    public static IEnumerable<YearlyGoalResponseModel> ToResponseModel(this IEnumerable<YearlyGoalDto> dtos) =>
         dtos.Select(dto => dto.ToResponseModel());
 
-    public static SubGoalResponseModel ToResponseModel(this SubGoalDto dto) =>
-        new SubGoalResponseModel
+    public static YearlyGoalResponseModel ToResponseModel(this YearlyGoalDto dto) =>
+        new YearlyGoalResponseModel
         {
             Id = dto.Id,
             GoalId = dto.GoalId,
@@ -42,8 +43,8 @@ public static class SubGoalMappings
         };
     #endregion
     #region ToDto
-    public static CreateSubGoalDto ToDto(this CreateSubGoalRequestModel requestModel) =>
-        new CreateSubGoalDto(
+    public static CreateYearlyGoalDto ToDto(this CreateYearlyGoalRequestModel requestModel) =>
+        new CreateYearlyGoalDto(
             requestModel.GoalId,
             requestModel.Title,
             requestModel.Description,

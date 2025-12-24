@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
@@ -25,6 +27,85 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* make sizing predictable and avoid overflow caused by padding */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Page container used by some pages to constrain width and add spacing */
+.app-container {
+  max-width: 48rem; /* matches container width */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+/* Forms and layout */
+.page-header {
+  @apply mb-6;
+}
+
+label {
+  @apply block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2;
+}
+
+input[type="text"], input[type="date"], input[type="number"], textarea {
+  @apply rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#0b0b0b] px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100;
+  box-sizing: border-box;
+}
+
+textarea {
+  @apply min-h-[96px] resize-vertical;
+}
+
+.goal-card {
+  @apply bg-white dark:bg-[#071024] rounded-xl shadow-md p-4 border border-zinc-100 dark:border-zinc-800;
+  display: flex;
+  flex-direction: column;
+}
+
+/* On wider screens show goal cards in a row with actions on the right */
+@media (min-width: 768px) {
+  .goal-card {
+    flex-direction: row;
+  }
+}
+
+/* allow inner text elements to shrink so actions don't overflow */
+.goal-card > div {
+  min-width: 0;
+}
+}
+
+.goal-title {
+  @apply text-lg font-semibold text-zinc-900 dark:text-zinc-100;
+}
+
+.goal-desc {
+  @apply text-sm text-zinc-600 dark:text-zinc-300 mt-1;
+}
+
+.actions > button {
+  @apply ml-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm;
+}
+
+.primary-btn {
+  @apply bg-sky-600 text-white hover:bg-sky-700;
+}
+
+.muted-btn {
+  @apply bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200;
+}
+
+.yearly-row {
+  @apply flex items-center gap-4 p-3 rounded-md border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-[#041025];
+}
+
+.toast {
+  @apply bg-black/90 text-white px-4 py-2 rounded-lg shadow-lg;
+}
+
 /* Base utilities and component resets */
 .btn {
   @apply inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700;
@@ -40,4 +121,12 @@ body {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+/* Make action groups wrap on small screens so buttons don't overflow */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
 }

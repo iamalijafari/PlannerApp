@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GoalResponseModel } from "@/src/features/goals/types/goal-response-model";
 import Modal from "@/components/Modal";
+import Link from "next/link";
 import { useTranslation } from "@/context/translationContext";
 import { MessageKey } from "@/types/message-key";
 
@@ -50,11 +51,12 @@ export default function GoalList({ goals, onComplete, onDelete }: GoalListProps)
             </div>
 
             <div className="flex flex-col items-end gap-2">
+              <Link href={`/goals/${g.id}/edit`} className="muted-btn text-sm">{t(MessageKey.Edit)}</Link>
               {!g.isCompleted && (
                 <button className="btn text-sm" onClick={() => handleCompleteClick(g.id)}>{t(MessageKey.Complete)}</button>
               )}
               <button
-                className="text-sm inline-flex items-center justify-center px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700"
+                className="muted-btn text-sm"
                 onClick={() => handleDeleteClick(g.id)}
               >
                 {t(MessageKey.Delete)}

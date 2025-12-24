@@ -1,6 +1,6 @@
 namespace Planner.Api.DTOs.Requests.YearlyGoal;
 
-public class CreateSubGoalRequestModel
+public class CreateYearlyGoalRequestModel
 {
     public Guid GoalId { get; set; }
     public string Title { get; set; }

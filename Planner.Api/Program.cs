@@ -14,10 +14,19 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowUI", policy =>
     {
+        // Allow UI origins during development. Use a restrictive policy in production.
         policy
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .WithOrigins("http://localhost:3000");
+            .AllowAnyMethod();
+
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.AllowAnyOrigin();
+        }
+        else
+        {
+            policy.WithOrigins("http://localhost:3000");
+        }
     });
 });
 

@@ -11,38 +11,38 @@ namespace Planner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SubGoalController : ControllerBase
+public class YearlyGoalController : ControllerBase
 {
-    private readonly ISubGoalService yearlyGoalService;
+    private readonly IYearlyGoalService yearlyGoalService;
 
-    public SubGoalController(ISubGoalService yearlyGoalService)
+    public YearlyGoalController(IYearlyGoalService yearlyGoalService)
     {
         this.yearlyGoalService = yearlyGoalService;
     }
 
-    [HttpPost("GetAll")]
-    public async Task<IActionResult> GetAll()
+    [HttpPost("GetAllByGoalId")]
+    public async Task<IActionResult> GetAllByGoalId([FromBody] Guid goalId)
     {
-        ServiceResult<IEnumerable<SubGoalDto>> result = await yearlyGoalService.GetAllAsync();
+        ServiceResult<IEnumerable<YearlyGoalDto>> result = await yearlyGoalService.GetAllByGoalIdAsync(goalId);
         return Ok(result.ToResponseModel());
     }
 
     [HttpPost("Get")]
     public async Task<IActionResult> Get([FromBody] Guid id)
     {
-        ServiceResult<SubGoalDto> result = await yearlyGoalService.GetByIdAsync(id);
+        ServiceResult<YearlyGoalDto> result = await yearlyGoalService.GetByIdAsync(id);
         return Ok(result.ToResponseModel());
     }
 
     [HttpPost("Create")]
-    public async Task<IActionResult> Create([FromBody] CreateSubGoalRequestModel dto)
+    public async Task<IActionResult> Create([FromBody] CreateYearlyGoalRequestModel dto)
     {
-        ServiceResult<SubGoalDto> result = await yearlyGoalService.CreateAsync(dto.ToDto());
+        ServiceResult<YearlyGoalDto> result = await yearlyGoalService.CreateAsync(dto.ToDto());
         return Ok(result.ToResponseModel());
     }
 
     [HttpPost("Update")]
-    public async Task<IActionResult> Update([FromBody] UpdateSubGoalDto dto)
+    public async Task<IActionResult> Update([FromBody] UpdateYearlyGoalDto dto)
     {
         ServiceResult<bool> result = await yearlyGoalService.UpdateAsync(dto);
         return Ok(result.ToResponseModel());

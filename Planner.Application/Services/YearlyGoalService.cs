@@ -18,10 +18,10 @@ public class YearlyGoalService : IYearlyGoalService
         this.yearlyGoalRepository = yearlyGoalRepository;
     }
 
-    public async Task<ServiceResult<IEnumerable<YearlyGoalDto>>> GetAllAsync()
+    public async Task<ServiceResult<IEnumerable<YearlyGoalDto>>> GetAllByGoalIdAsync(Guid goalId)
     {
         ServiceResult<IEnumerable<YearlyGoalDto>> result = new();
-        IEnumerable<YearlyGoal> yearlyGoals = await yearlyGoalRepository.GetAllAsync();
+        IEnumerable<YearlyGoal> yearlyGoals = await yearlyGoalRepository.GetAllByGoalIdAsync(goalId);
         result.SetResult(yearlyGoals.ToDto());
         return result;
     }

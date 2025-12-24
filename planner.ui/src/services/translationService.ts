@@ -1,24 +1,39 @@
-import { TranslationRequestModel } from "@/types/translation-request-model";
+const cache = new Map<string, string>();
 
-export async function translateApi(
-  model: TranslationRequestModel
-): Promise<string> {
-  const apiUrl = process.env.NEXT_PUBLIC_TRANSLATION_API_URL;
-
-  if (!apiUrl) {
-    throw new Error("NEXT_PUBLIC_TRANSLATION_API_URL is missing");
+export async function t(key: string, language = 'English'): Promise<string> {
+  const cacheKey = `${language}:${key}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey)!;
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_TRANSLATION_API_URL || '/api/translation/translate';
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ MessageKey: key, Language: language }),
+    });
+    if (!res.ok) return key;
+    const text = await res.text();
+    cache.set(cacheKey, text);
+    return text;
+  } catch (e) {
+    console.error('translation error', e);
+    return key;
   }
+}
 
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(model),
-  });
+export default { t };
 
-  if (!response.ok) {
-    console.error("Translation API error:", response.status, response.statusText);
-    throw new Error("Translation request failed");
+export async function translateApi(model: any): Promise<string> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_TRANSLATION_API_URL || '/api/translation/translate';
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(model),
+    });
+    if (!res.ok) throw new Error('Translation API failed');
+    return await res.text();
+  } catch (e) {
+    console.error('translateApi error', e);
+    return String(model.MessageKey);
   }
-
-  return await response.text();
 }

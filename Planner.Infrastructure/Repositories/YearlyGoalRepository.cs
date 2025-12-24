@@ -18,9 +18,9 @@ public class YearlyGoalRepository : IYearlyGoalRepository
         return await context.YearlyGoals.FindAsync(id);
     }
 
-    public async Task<IEnumerable<Domain.Entities.YearlyGoal>> GetAllAsync()
+    public async Task<IEnumerable<Domain.Entities.YearlyGoal>> GetAllByGoalIdAsync(Guid goalId)
     {
-        return await context.YearlyGoals.ToListAsync();
+        return await context.YearlyGoals.Where(yearlyGoal => yearlyGoal.GoalId == goalId).ToListAsync();
     }
 
     public async Task AddAsync(Domain.Entities.YearlyGoal yearlyGoal)
