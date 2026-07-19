@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.0.7",
+    "next": "^16.2.10",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
@@ -22,6 +22,7 @@
     "@typescript-eslint/parser": "^8.48.1",
     "autoprefixer": "^10.4.23",
     "babel-plugin-react-compiler": "1.0.0",
+    "baseline-browser-mapping": "^2.10.43",
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
     "eslint-config-prettier": "^10.1.8",

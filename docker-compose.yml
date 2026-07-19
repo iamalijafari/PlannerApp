@@ -1,0 +1,64 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: planner_db
+    environment:
+      POSTGRES_DB: plannerdb
+      POSTGRES_USER: planner_user
+      POSTGRES_PASSWORD: planner_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planner_user -d plannerdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - planner_network
+
+  # ASP.NET Core Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: planner_api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:5010
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=plannerdb;Username=planner_user;Password=planner_password;"
+    ports:
+      - "5010:5010"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - planner_network
+    restart: unless-stopped
+
+  # Next.js Frontend Application
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    container_name: planner_ui
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:5010/api
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - planner_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  planner_network:
+    driver: bridge

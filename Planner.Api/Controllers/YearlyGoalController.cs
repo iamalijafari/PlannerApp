@@ -20,43 +20,45 @@ public class YearlyGoalController : ControllerBase
         this.yearlyGoalService = yearlyGoalService;
     }
 
-    [HttpPost("GetAllByGoalId")]
-    public async Task<IActionResult> GetAllByGoalId([FromBody] Guid goalId)
+    [HttpGet("by-goal/{goalId}")]
+    public async Task<IActionResult> GetAllByGoalId(Guid goalId)
     {
         ServiceResult<IEnumerable<YearlyGoalDto>> result = await yearlyGoalService.GetAllByGoalIdAsync(goalId);
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPost("Get")]
-    public async Task<IActionResult> Get([FromBody] Guid id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id)
     {
         ServiceResult<YearlyGoalDto> result = await yearlyGoalService.GetByIdAsync(id);
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPost("Create")]
+    [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateYearlyGoalRequestModel dto)
     {
         ServiceResult<YearlyGoalDto> result = await yearlyGoalService.CreateAsync(dto.ToDto());
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPost("Update")]
-    public async Task<IActionResult> Update([FromBody] UpdateYearlyGoalDto dto)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateYearlyGoalDto dto)
     {
-        ServiceResult<bool> result = await yearlyGoalService.UpdateAsync(dto);
+        // Reconstruct DTO with the ID from the route
+        var updatedDto = new UpdateYearlyGoalDto(id, dto.Title, dto.Description, dto.DueDate, dto.IsCompleted);
+        ServiceResult<bool> result = await yearlyGoalService.UpdateAsync(updatedDto);
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPost("Delete")]
-    public async Task<IActionResult> Delete([FromBody] Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         ServiceResult<bool> result = await yearlyGoalService.DeleteAsync(id);
         return Ok(result.ToResponseModel());
     }
 
-    [HttpPost("Complete")]
-    public async Task<IActionResult> Complete([FromBody] Guid id)
+    [HttpPut("{id}/complete")]
+    public async Task<IActionResult> Complete(Guid id)
     {
         ServiceResult<bool> result = await yearlyGoalService.CompleteAsync(id);
         return Ok(result.ToResponseModel());

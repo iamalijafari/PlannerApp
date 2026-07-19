@@ -7,12 +7,7 @@ import Modal from "@/components/Modal";
 import { GoalResponseModel } from "@/src/features/goals/types/goal-response-model";
 import { CreateGoalRequestModel } from "@/src/features/goals/types/create-goal-request-model";
 import { useApiResponse } from "@/utils/use-api-response";
-
-const API_BASE = process.env.NEXT_PUBLIC_GOAL_API_URL;
-
-if (!API_BASE) {
-  throw new Error("NEXT_PUBLIC_GOAL_API_URL is not defined in .env.local");
-}
+import * as goalsApi from "@/src/features/goals/api/goals-api";
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<GoalResponseModel[]>([]);
@@ -25,19 +20,22 @@ export default function GoalsPage() {
   // LOAD GOALS
   const loadGoals = async () => {
     try {
-      const res = await fetch(`${API_BASE}/GetAll`, { method: "POST" });
-      const data = await res.json();
+      const data = await goalsApi.getGoals();
 
       await handleResponse<GoalResponseModel[]>(
         data,
-        (result) => setGoals(result),
+        (result) => {
+          setGoals(result || []);
+        },
         (message) => {
+          setGoals([]);
           setModalMessage(message);
           setModalOpen(true);
         }
       );
     } catch (err) {
       console.error("Failed to load goals:", err);
+      setGoals([]);
       setModalMessage("Unexpected error occurred.");
       setModalOpen(true);
     } finally {
@@ -52,13 +50,7 @@ export default function GoalsPage() {
   // CREATE GOAL
   const handleCreateGoal = async (model: CreateGoalRequestModel) => {
     try {
-      const res = await fetch(`${API_BASE}/Create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(model),
-      });
-
-      const data = await res.json();
+      const data = await goalsApi.createGoal(model);
 
       await handleResponse<GoalResponseModel>(
         data,
@@ -78,13 +70,7 @@ export default function GoalsPage() {
   // COMPLETE GOAL
   const handleComplete = async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/Complete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(id),
-      });
-
-      const data = await res.json();
+      const data = await goalsApi.completeGoal(id);
 
       await handleResponse<boolean>(
         data,
@@ -97,7 +83,7 @@ export default function GoalsPage() {
         }
       );
     } catch (err) {
-      console.error("Error deleting goal:", err);
+      console.error("Error completing goal:", err);
       setModalMessage("Unexpected error occurred.");
       setModalOpen(true);
     }
@@ -106,13 +92,7 @@ export default function GoalsPage() {
   // DELETE GOAL
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`${API_BASE}/Delete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(id),
-      });
-
-      const data = await res.json();
+      const data = await goalsApi.deleteGoal(id);
 
       await handleResponse<boolean>(
         data,

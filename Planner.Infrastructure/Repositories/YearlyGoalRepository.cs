@@ -28,9 +28,10 @@ public class YearlyGoalRepository : IYearlyGoalRepository
         await context.YearlyGoals.AddAsync(yearlyGoal);
     }
 
-    public async Task UpdateAsync(Domain.Entities.YearlyGoal yearlyGoal)
+    public Task UpdateAsync(Domain.Entities.YearlyGoal yearlyGoal)
     {
         context.YearlyGoals.Update(yearlyGoal);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Guid id)

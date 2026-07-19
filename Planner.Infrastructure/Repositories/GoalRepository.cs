@@ -28,9 +28,10 @@ public class GoalRepository : IGoalRepository
         await context.Goals.AddAsync(goal);
     }
 
-    public async Task UpdateAsync(Domain.Entities.Goal goal)
+    public Task UpdateAsync(Domain.Entities.Goal goal)
     {
         context.Goals.Update(goal);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Guid id)

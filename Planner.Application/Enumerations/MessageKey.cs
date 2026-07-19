@@ -37,5 +37,9 @@ public enum MessageKey
     Toast_YearlyGoal_Updated = 32,
     Toast_YearlyGoal_Deleted = 33,
     Toast_Goal_Deleted = 34,
-    Back = 35
+    Back = 35,
+    Goal_NotFound = 36,
+    YearlyGoal_NotFound = 37,
+    Invalid_Input = 38,
+    Operation_Failed = 39
 }
