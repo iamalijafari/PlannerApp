@@ -38,14 +38,14 @@ services:
       - planner_network
     restart: unless-stopped
 
-  # Next.js Frontend Application
+  # docker-compose.yml (ui service)
   ui:
     build:
       context: .
       dockerfile: Dockerfile.ui
-    container_name: planner_ui
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:5010/api
     environment:
-      NEXT_PUBLIC_API_URL: http://api:5010/api
       NODE_ENV: production
     ports:
       - "3000:3000"

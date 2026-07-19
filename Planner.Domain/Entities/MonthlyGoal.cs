@@ -1,23 +1,23 @@
 namespace Planner.Domain.Entities;
 
-public class YearlyGoal
+public class MonthlyGoal
 {
     public Guid Id { get; private set; }
-    public Guid GoalId { get; set; }
-    public Goal Goal { get; private set; }
+    public Guid YearlyGoalId { get; set; }
+    public YearlyGoal YearlyGoal { get; private set; }
     public string Title { get; private set; }
     public string Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime DueDate { get; private set; }
     public bool IsCompleted { get; private set; }
-    public ICollection<MonthlyGoal> MonthlyGoals { get; private set; } = new List<MonthlyGoal>();
+    public ICollection<WeeklyGoal> WeeklyGoals { get; private set; } = new List<WeeklyGoal>();
 
-    private YearlyGoal() { }
+    private MonthlyGoal() { }
 
-    public YearlyGoal(Guid goalId, string title, string description, DateTime dueDate)
+    public MonthlyGoal(Guid yearlyGoalId, string title, string description, DateTime dueDate)
     {
         Id = Guid.NewGuid();
-        GoalId = goalId;
+        YearlyGoalId = yearlyGoalId;
         Title = title;
         Description = description;
         CreatedAt = DateTime.UtcNow;
@@ -25,17 +25,12 @@ public class YearlyGoal
         IsCompleted = false;
     }
 
-    public void MarkAsCompleted()
-    {
-        IsCompleted = true;
-    }
+    public void MarkAsCompleted() => IsCompleted = true;
 
     public void Update(string title, string description, DateTime dueDate, bool isCompleted)
     {
         if (string.IsNullOrWhiteSpace(title))
-        {
             throw new ArgumentException("Title cannot be empty.", nameof(title));
-        }
 
         Title = title;
         Description = description;

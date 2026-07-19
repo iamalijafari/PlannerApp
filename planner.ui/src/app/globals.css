@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* planner.ui/src/app/globals.css */
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -27,16 +26,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* make sizing predictable and avoid overflow caused by padding */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Page container used by some pages to constrain width and add spacing */
 .app-container {
-  max-width: 48rem; /* matches container width */
+  max-width: 48rem;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
@@ -45,25 +42,24 @@ body {
   padding-bottom: 1.25rem;
 }
 
-/* Forms and layout */
 .page-header {
   @apply mb-6;
 }
 
 label {
-  @apply block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2;
+  @apply block text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1.5;
 }
 
 input[type="text"],
 input[type="date"],
 input[type="number"],
 textarea {
-  @apply rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#0b0b0b] px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100;
-  box-sizing: border-box;
+  @apply rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#0b0b0b] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm transition-all;
+  @apply focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500;
 }
 
 textarea {
-  @apply min-h-[96px] resize-vertical;
+  @apply min-h-[96px] resize-y;
 }
 
 .goal-card {
@@ -72,14 +68,12 @@ textarea {
   flex-direction: column;
 }
 
-/* On wider screens show goal cards in a row with actions on the right */
 @media (min-width: 768px) {
   .goal-card {
     flex-direction: row;
   }
 }
 
-/* allow inner text elements to shrink so actions don't overflow */
 .goal-card > div {
   min-width: 0;
 }
@@ -101,7 +95,9 @@ textarea {
 }
 
 .muted-btn {
-  @apply bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200;
+  @apply inline-flex items-center justify-center px-6 py-2.5 rounded-full font-medium
+         border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200
+         hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all;
 }
 
 .yearly-row {
@@ -112,24 +108,23 @@ textarea {
   @apply bg-black/90 text-white px-4 py-2 rounded-lg shadow-lg;
 }
 
-/* Base utilities and component resets */
 .btn {
-  @apply inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700;
+  @apply inline-flex items-center justify-center px-6 py-2.5 rounded-full font-medium
+         bg-sky-600 text-white hover:bg-sky-700 active:scale-[0.98] transition-all shadow-sm;
 }
 
 .card {
-  @apply bg-white dark:bg-[#0b0b0b] rounded-lg shadow p-4;
+  @apply bg-white dark:bg-[#0b0b0b] rounded-2xl shadow-lg p-8 border border-zinc-100 dark:border-zinc-800;
 }
 
 .container {
-  max-width: 48rem; /* matches max-w-2xl */
+  max-width: 48rem;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-/* Make action groups wrap on small screens so buttons don't overflow */
 .actions {
   display: flex;
   gap: 0.5rem;
