@@ -35,4 +35,8 @@
   <Message key="Toast_YearlyGoal_Deleted">Yearly goal was deleted</Message>
   <Message key="Toast_Goal_Deleted">Goal was deleted</Message>
   <Message key="Back">Back</Message>
+  <Message key="DailyGoal_NotFound">Daily goal not found</Message>
+  <Message key="MonthlyGoal_NotFound">Monthly goal not found</Message>
+  <Message key="WeeklyGoal_NotFound">Yearly goal not found</Message>
+  <Message key="Plan">Plan</Message>
 </Messages>

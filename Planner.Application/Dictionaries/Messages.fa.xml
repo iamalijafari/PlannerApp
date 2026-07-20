@@ -35,4 +35,8 @@
   <Message key="Toast_YearlyGoal_Deleted">هدف سالیانه حذف شد</Message>
   <Message key="Toast_Goal_Deleted">هدف حذف شد</Message>
   <Message key="Back">برگشت</Message>
+  <Message key="MonthlyGoal_NotFound">هدف ماهیانه یافت نشد</Message>
+  <Message key="WeeklyGoal_NotFound">هدف سالانه یافت نشد</Message>
+  <Message key="DailyGoal_NotFound">هدف روزانه یافت نشد</Message>
+  <Message key="Plan">هدف</Message>
 </Messages>

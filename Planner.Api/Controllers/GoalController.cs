@@ -20,7 +20,7 @@ public class GoalController : ControllerBase
         this.goalService = goalService;
     }
 
-    [HttpGet]
+    [HttpGet("GetAll")]
     public async Task<IActionResult> GetAll()
     {
         ServiceResult<IEnumerable<GoalDto>> result = await goalService.GetAllAsync();
@@ -44,7 +44,6 @@ public class GoalController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGoalDto dto)
     {
-        // Reconstruct DTO with the ID from the route
         var updatedDto = new UpdateGoalDto(id, dto.Title, dto.Description, dto.DueDate, dto.IsCompleted);
         ServiceResult<bool> result = await goalService.UpdateAsync(updatedDto);
         return Ok(result.ToResponseModel());
@@ -62,5 +61,12 @@ public class GoalController : ControllerBase
     {
         ServiceResult<bool> result = await goalService.CompleteAsync(id);
         return Ok(result.ToResponseModel());
+    }
+
+    [HttpGet("{id}/tree")]
+    public async Task<IActionResult> GetTree(Guid id)
+    {
+        ServiceResult<GoalTreeDto> result = await goalService.GetTreeAsync(id);
+        return Ok(result);
     }
 }

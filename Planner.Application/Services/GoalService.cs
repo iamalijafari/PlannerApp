@@ -168,4 +168,31 @@ public class GoalService : IGoalService
         }
         return result;
     }
+
+    public async Task<ServiceResult<GoalTreeDto>> GetTreeAsync(Guid id)
+    {
+        ServiceResult<GoalTreeDto> result = new();
+        try
+        {
+            if (id == Guid.Empty)
+            {
+                result.SetError(MessageKey.Invalid_Input);
+                return result;
+            }
+
+            Goal goal = await goalRepository.GetTreeByIdAsync(id);
+            if (goal == null)
+            {
+                result.SetError(MessageKey.Goal_NotFound);
+                return result;
+            }
+
+            result.SetResult(goal.ToTreeDto());
+        }
+        catch (Exception)
+        {
+            result.SetError(MessageKey.ServerError);
+        }
+        return result;
+    }
 }

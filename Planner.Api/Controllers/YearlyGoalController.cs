@@ -44,7 +44,6 @@ public class YearlyGoalController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateYearlyGoalDto dto)
     {
-        // Reconstruct DTO with the ID from the route
         var updatedDto = new UpdateYearlyGoalDto(id, dto.Title, dto.Description, dto.DueDate, dto.IsCompleted);
         ServiceResult<bool> result = await yearlyGoalService.UpdateAsync(updatedDto);
         return Ok(result.ToResponseModel());

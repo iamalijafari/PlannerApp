@@ -17,7 +17,7 @@ async function handleResponse<T>(response: Response): Promise<ResponseModel<T>> 
 
 export async function getGoals(): Promise<ResponseModel<GoalResponseModel[]>> {
   try {
-    const res = await fetch(API_GOAL_ENDPOINT, { 
+    const res = await fetch(`${API_GOAL_ENDPOINT}/GetAll`, { 
       cache: "no-store",
       headers: { "Content-Type": "application/json" }
     });

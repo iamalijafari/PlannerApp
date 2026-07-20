@@ -47,4 +47,14 @@ public class GoalRepository : IGoalRepository
     {
         await context.SaveChangesAsync();
     }
+
+    public async Task<Domain.Entities.Goal> GetTreeByIdAsync(Guid id)
+    {
+        return await context.Goals
+            .Include(g => g.YearlyGoals)
+                .ThenInclude(y => y.MonthlyGoals)
+                    .ThenInclude(m => m.WeeklyGoals)
+                        .ThenInclude(w => w.DailyGoals)
+            .FirstOrDefaultAsync(g => g.Id == id);
+    }
 }

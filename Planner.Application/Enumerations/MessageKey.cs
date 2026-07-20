@@ -41,5 +41,8 @@ public enum MessageKey
     Goal_NotFound = 36,
     YearlyGoal_NotFound = 37,
     Invalid_Input = 38,
-    Operation_Failed = 39
+    Operation_Failed = 39,
+    DailyGoal_NotFound = 40,
+    MonthlyGoal_NotFound = 41,
+    WeeklyGoal_NotFound = 42
 }
