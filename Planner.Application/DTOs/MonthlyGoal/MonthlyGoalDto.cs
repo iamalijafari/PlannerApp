@@ -2,7 +2,7 @@ namespace Planner.Application.DTOs.MonthlyGoal;
 
 public record MonthlyGoalDto(
     Guid Id,
-    Guid GoalId,
+    Guid YearlyGoalId,
     string Title,
     string Description,
     DateTime CreatedAt,

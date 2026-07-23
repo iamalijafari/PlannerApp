@@ -5,16 +5,23 @@ using Planner.Application.Mappers.WeeklyGoal;
 using Planner.Domain.Entities;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.Enumerations;
+using Microsoft.Extensions.Logging;
 
 namespace Planner.Application.Services;
 
 public class WeeklyGoalService : IWeeklyGoalService
 {
     private readonly IWeeklyGoalRepository weeklyGoalRepository;
+    private readonly ILogger<GoalService> logger;
 
-    public WeeklyGoalService(IWeeklyGoalRepository weeklyGoalRepository)
+    public WeeklyGoalService
+    (
+        IWeeklyGoalRepository weeklyGoalRepository,
+        ILogger<GoalService> logger
+    )
     {
         this.weeklyGoalRepository = weeklyGoalRepository;
+        this.logger = logger;
     }
 
     public async Task<ServiceResult<IEnumerable<WeeklyGoalDto>>> GetAllByGoalIdAsync(Guid goalId)
@@ -34,6 +41,7 @@ public class WeeklyGoalService : IWeeklyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get all weekly goals by goal id");
         }
         return result;
     }
@@ -61,6 +69,7 @@ public class WeeklyGoalService : IWeeklyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get weekly goal by id");
         }
         return result;
     }
@@ -70,13 +79,13 @@ public class WeeklyGoalService : IWeeklyGoalService
         ServiceResult<WeeklyGoalDto> result = new();
         try
         {
-            if (dto == null || dto.GoalId == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title))
+            if (dto == null || dto.MonthlyGoalId == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title))
             {
                 result.SetError(MessageKey.Invalid_Input);
                 return result;
             }
 
-            WeeklyGoal weeklyGoal = new WeeklyGoal(dto.GoalId, dto.Title, dto.Description, dto.DueDate);
+            WeeklyGoal weeklyGoal = new WeeklyGoal(dto.MonthlyGoalId, dto.Title, dto.Description, dto.DueDate);
             await weeklyGoalRepository.AddAsync(weeklyGoal);
             await weeklyGoalRepository.SaveChangesAsync();
             result.SetResult(weeklyGoal.ToDto());
@@ -84,6 +93,7 @@ public class WeeklyGoalService : IWeeklyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to create weekly goal");
         }
         return result;
     }
@@ -114,6 +124,7 @@ public class WeeklyGoalService : IWeeklyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to update weekly goal");
         }
         return result;
     }
@@ -143,6 +154,7 @@ public class WeeklyGoalService : IWeeklyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to delete weekly goal");
         }
         return result;
     }
@@ -173,6 +185,7 @@ public class WeeklyGoalService : IWeeklyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to complete weekly goal");
         }
         return result;
     }

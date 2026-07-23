@@ -2,41 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Goal } from '../../types/goal';
 import * as goalService from '../../services/goalService';
-import { t } from '../../services/translationService';
 import { useToast } from '../toast/ToastContext';
+import { useTranslation } from "@/context/translationContext";
+import { MessageKey } from '@/types/message-key';
 
 export const GoalList: React.FC = () => {
   const [items, setItems] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [labelLoading, setLabelLoading] = useState('Loading...');
-  const [labelAdd, setLabelAdd] = useState('Add');
-  const [labelNoGoals, setLabelNoGoals] = useState('No goals found. Add one.');
-  const [labelEdit, setLabelEdit] = useState('Edit');
-  const [labelDelete, setLabelDelete] = useState('Delete');
-  const [labelComplete, setLabelComplete] = useState('Complete');
-  const [labelCompleted, setLabelCompleted] = useState('Completed');
   const toast = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
-    // load translations for visible labels
-    Promise.all([
-      t('GoalListTitle'),
-      t('Add'),
-      t('Goals_Empty'),
-      t('Edit'),
-      t('Delete'),
-      t('Complete'),
-      t('Complete'),
-    ]).then((res) => {
-      setLabelAdd(res[1] || 'Add');
-      setLabelNoGoals(res[2] || 'No goals found. Add one.');
-      setLabelEdit(res[3] || 'Edit');
-      setLabelDelete(res[4] || 'Delete');
-      setLabelComplete(res[5] || 'Complete');
-      setLabelLoading('Loading...');
-    });
-
     goalService.listGoals().then((g) => setItems(g)).catch(() => setItems([])).finally(() => setLoading(false));
   }, []);
 
@@ -49,7 +26,7 @@ export const GoalList: React.FC = () => {
     try {
       await goalService.deleteGoal(id);
       // toast deletion
-      t('Toast_Goal_Deleted').then((m) => toast.show(m));
+      toast.show(t(MessageKey.Toast_Goal_Deleted));
     } catch (e) {
       console.error(e);
       setItems(prev);
@@ -63,20 +40,20 @@ export const GoalList: React.FC = () => {
     setItems((s) => s.map((g) => (g.id === id ? { ...g, completed: true } : g)));
     try {
       await goalService.completeGoal(id);
-      t('Goal_Completed_Message').then((m) => toast.show(m));
+      toast.show(t(MessageKey.Goal_Completed_Message));
     } catch (e) {
       console.error(e);
       setItems(prev);
     }
   }
 
-  if (loading) return <div className="p-4">{labelLoading}</div>;
+  if (loading) return <div className="p-4">{t(MessageKey.Loading)}</div>;
   if (!items.length)
     return (
       <div className="container py-8">
         <div className="text-center">
-          <p className="text-zinc-600 dark:text-zinc-300 mb-4">{labelNoGoals}</p>
-          <Link href="/goals/new" className="inline-block px-4 py-2 rounded-md primary-btn">{labelAdd}</Link>
+          <p className="text-zinc-600 dark:text-zinc-300 mb-4">{t(MessageKey.NoGoals)}</p>
+          <Link href="/goals/new" className="inline-block px-4 py-2 rounded-md primary-btn">{t(MessageKey.Add)}</Link>
         </div>
       </div>
     );
@@ -84,8 +61,8 @@ export const GoalList: React.FC = () => {
   return (
     <div className="container py-8">
         <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">{labelLoading === 'Loading...' ? 'Goals' : t('GoalListTitle')}</h2>
-        <Link href="/goals/new" className="primary-btn">{labelAdd}</Link>
+        <h2 className="text-2xl font-bold">{t(MessageKey.Loading) === 'Loading...' ? 'Goals' : t(MessageKey.GoalListTitle)}</h2>
+        <Link href="/goals/new" className="primary-btn">{t(MessageKey.Add)}</Link>
       </div>
 
       <div className="grid gap-4">
@@ -97,11 +74,11 @@ export const GoalList: React.FC = () => {
             </div>
             <div className="actions">
               <Link href={`/goals/${g.id}/edit`}>
-                <button className="muted-btn" aria-label={`Edit ${g.title}`}>{labelEdit}</button>
+                <button className="muted-btn" aria-label={`Edit ${g.title}`}>{t(MessageKey.Edit)}</button>
               </Link>
-              <button onClick={() => handleDelete(g.id)} className="muted-btn">{labelDelete}</button>
+              <button onClick={() => handleDelete(g.id)} className="muted-btn">{t(MessageKey.Delete)}</button>
               <button onClick={() => handleComplete(g.id)} disabled={g.completed} className={`ml-2 px-3 py-1.5 rounded-md text-sm ${g.completed ? 'completed-badge' : 'primary-btn'}`}>
-                {g.completed ? labelCompleted : labelComplete}
+                {g.completed ? t(MessageKey.Completed) : t(MessageKey.Complete)}
               </button>
             </div>
           </div>

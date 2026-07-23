@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { YearlyGoal } from '../../types/goal';
 import YearlyGoalRowEditor from './YearlyGoalRowEditor';
-import { t } from '../../services/translationService';
+import { useTranslation } from "@/context/translationContext";
+import { MessageKey } from '@/types/message-key';
 
 interface Props {
   values?: YearlyGoal[];
@@ -10,37 +11,12 @@ interface Props {
 
 export const YearlyGoalsTable: React.FC<Props> = ({ values = [], onChange }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [labelYearlyGoals, setLabelYearlyGoals] = useState('Yearly Goals');
-  const [labelAdd, setLabelAdd] = useState('Add');
-  const [labelEdit, setLabelEdit] = useState('Edit');
-  const [labelDelete, setLabelDelete] = useState('Delete');
-  const [labelCancel, setLabelCancel] = useState('Cancel');
-  const [placeholderTitle, setPlaceholderTitle] = useState('Title');
-  const [placeholderTarget, setPlaceholderTarget] = useState('Target');
+  const { t } = useTranslation();
 
-  useEffect(() => {
-    Promise.all([
-      t('YearlyGoals_Title'),
-      t('Add'),
-      t('Edit'),
-      t('Delete'),
-      t('Cancel'),
-      t('Title'),
-      t('Field_Priority'),
-    ]).then((res) => {
-      setLabelYearlyGoals(res[0] || 'Yearly Goals');
-      setLabelAdd(res[1] || 'Add');
-      setLabelEdit(res[2] || 'Edit');
-      setLabelDelete(res[3] || 'Delete');
-      setLabelCancel(res[4] || 'Cancel');
-      setPlaceholderTitle(res[5] || 'Title');
-      setPlaceholderTarget('Target');
-    });
-  }, []);
 
   function handleAdd() {
     if (values.length >= 5) {
-      t('Max_YearlyGoals_Message').then((m) => alert(m));
+      alert(t(MessageKey.Max_YearlyGoals_Message));
       return;
     }
     const next: YearlyGoal = { id: `tmp-${Date.now()}`, year: new Date().getFullYear(), title: '', target: '', completed: false };
@@ -79,9 +55,9 @@ export const YearlyGoalsTable: React.FC<Props> = ({ values = [], onChange }) => 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-semibold">{labelYearlyGoals}</h4>
+        <h4 className="text-lg font-semibold">{t(MessageKey.YearlyGoals)}</h4>
         <div className="flex items-center">
-          <button onClick={handleAdd} disabled={values.length >= 5} className="primary-btn mr-3">{labelAdd}</button>
+          <button onClick={handleAdd} disabled={values.length >= 5} className="primary-btn mr-3">{t(MessageKey.Add)}</button>
           <span className="text-sm text-zinc-500 dark:text-zinc-400">{values.length}/5</span>
         </div>
       </div>
@@ -96,9 +72,9 @@ export const YearlyGoalsTable: React.FC<Props> = ({ values = [], onChange }) => 
                 onSave={(v) => handleRowSave(idx, v)}
                 onCancel={() => setEditingIndex(null)}
                 saveLabel="Save"
-                cancelLabel={labelCancel}
-                titlePlaceholder={placeholderTitle}
-                targetPlaceholder={placeholderTarget}
+                cancelLabel={t(MessageKey.Cancel)}
+                titlePlaceholder={t(MessageKey.Title)}
+                targetPlaceholder={t(MessageKey.Target)}
               />
             ) : (
               <>
@@ -107,8 +83,8 @@ export const YearlyGoalsTable: React.FC<Props> = ({ values = [], onChange }) => 
                 <div className="w-32 text-sm text-zinc-500">{row.target}</div>
                 <div className="w-36 text-sm text-zinc-500">{row.dueDate || ''}</div>
                 <div className="ml-4">
-                  <button onClick={() => setEditingIndex(idx)} className="muted-btn mr-2">{labelEdit}</button>
-                  <button onClick={() => handleDelete(idx)} className="muted-btn">{labelDelete}</button>
+                  <button onClick={() => setEditingIndex(idx)} className="muted-btn mr-2">{t(MessageKey.Edit)}</button>
+                  <button onClick={() => handleDelete(idx)} className="muted-btn">{t(MessageKey.Delete)}</button>
                 </div>
               </>
             )}

@@ -2,8 +2,6 @@ using Planner.Api.DTOs.Responses.WeeklyGoal;
 using Planner.Api.DTOs.Responses.Utility;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.DTOs.WeeklyGoal;
-using System.Collections.Generic;
-using System.Linq;
 using Planner.Api.DTOs.Requests.WeeklyGoal;
 
 namespace Planner.Api.Mappers.WeeklyGoal;
@@ -34,7 +32,7 @@ public static class WeeklyGoalMappings
         new WeeklyGoalResponseModel
         {
             Id = dto.Id,
-            GoalId = dto.GoalId,
+            MonthlyGoalId = dto.MonthlyGoalId,
             Title = dto.Title,
             Description = dto.Description,
             CreatedAt = dto.CreatedAt,
@@ -45,7 +43,7 @@ public static class WeeklyGoalMappings
     #region ToDto
     public static CreateWeeklyGoalDto ToDto(this CreateWeeklyGoalRequestModel requestModel) =>
         new CreateWeeklyGoalDto(
-            requestModel.GoalId,
+            requestModel.MonthlyGoalId,
             requestModel.Title,
             requestModel.Description,
             requestModel.DueDate);

@@ -39,5 +39,13 @@ export enum MessageKey {
     YearlyGoal_NotFound = 37,
     Invalid_Input = 38,
     Operation_Failed = 39,
-    Plan = 40,
+    DailyGoal_NotFound = 40,
+    MonthlyGoal_NotFound = 41,
+    WeeklyGoal_NotFound = 42,
+    Loading = 43,
+    NoGoals = 44,
+    Completed = 45,
+    YearlyGoals = 46,
+    Target = 47,
+    Plan = 48
 }

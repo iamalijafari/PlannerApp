@@ -5,16 +5,23 @@ using Planner.Application.Mappers.MonthlyGoal;
 using Planner.Domain.Entities;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.Enumerations;
+using Microsoft.Extensions.Logging;
 
 namespace Planner.Application.Services;
 
 public class MonthlyGoalService : IMonthlyGoalService
 {
     private readonly IMonthlyGoalRepository monthlyGoalRepository;
+    private readonly ILogger<GoalService> logger;
 
-    public MonthlyGoalService(IMonthlyGoalRepository monthlyGoalRepository)
+    public MonthlyGoalService
+    (
+        IMonthlyGoalRepository monthlyGoalRepository,
+        ILogger<GoalService> logger
+    )
     {
         this.monthlyGoalRepository = monthlyGoalRepository;
+        this.logger = logger;
     }
 
     public async Task<ServiceResult<IEnumerable<MonthlyGoalDto>>> GetAllByGoalIdAsync(Guid goalId)
@@ -34,6 +41,7 @@ public class MonthlyGoalService : IMonthlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get all monthly goals by goal id");
         }
         return result;
     }
@@ -61,6 +69,7 @@ public class MonthlyGoalService : IMonthlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get monthly goal by id");
         }
         return result;
     }
@@ -70,13 +79,13 @@ public class MonthlyGoalService : IMonthlyGoalService
         ServiceResult<MonthlyGoalDto> result = new();
         try
         {
-            if (dto == null || dto.GoalId == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title))
+            if (dto == null || dto.YearlyGoalId == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title))
             {
                 result.SetError(MessageKey.Invalid_Input);
                 return result;
             }
 
-            MonthlyGoal monthlyGoal = new MonthlyGoal(dto.GoalId, dto.Title, dto.Description, dto.DueDate);
+            MonthlyGoal monthlyGoal = new MonthlyGoal(dto.YearlyGoalId, dto.Title, dto.Description, dto.DueDate);
             await monthlyGoalRepository.AddAsync(monthlyGoal);
             await monthlyGoalRepository.SaveChangesAsync();
             result.SetResult(monthlyGoal.ToDto());
@@ -84,6 +93,7 @@ public class MonthlyGoalService : IMonthlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to create monthly goal");
         }
         return result;
     }
@@ -114,6 +124,7 @@ public class MonthlyGoalService : IMonthlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to update monthly goal");
         }
         return result;
     }
@@ -143,6 +154,7 @@ public class MonthlyGoalService : IMonthlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to delete monthly goal");
         }
         return result;
     }
@@ -173,6 +185,7 @@ public class MonthlyGoalService : IMonthlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to complete monthly goal");
         }
         return result;
     }

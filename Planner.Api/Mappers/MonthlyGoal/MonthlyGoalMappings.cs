@@ -2,8 +2,6 @@ using Planner.Api.DTOs.Responses.MonthlyGoal;
 using Planner.Api.DTOs.Responses.Utility;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.DTOs.MonthlyGoal;
-using System.Collections.Generic;
-using System.Linq;
 using Planner.Api.DTOs.Requests.MonthlyGoal;
 
 namespace Planner.Api.Mappers.MonthlyGoal;
@@ -34,7 +32,7 @@ public static class MonthlyGoalMappings
         new MonthlyGoalResponseModel
         {
             Id = dto.Id,
-            GoalId = dto.GoalId,
+            YearlyGoalId = dto.YearlyGoalId,
             Title = dto.Title,
             Description = dto.Description,
             CreatedAt = dto.CreatedAt,
@@ -45,7 +43,7 @@ public static class MonthlyGoalMappings
     #region ToDto
     public static CreateMonthlyGoalDto ToDto(this CreateMonthlyGoalRequestModel requestModel) =>
         new CreateMonthlyGoalDto(
-            requestModel.GoalId,
+            requestModel.YearlyGoalId,
             requestModel.Title,
             requestModel.Description,
             requestModel.DueDate);

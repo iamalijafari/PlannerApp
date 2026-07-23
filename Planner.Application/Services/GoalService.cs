@@ -5,14 +5,21 @@ using Planner.Application.Mappers.Goal;
 using Planner.Domain.Entities;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.Enumerations;
+using Microsoft.Extensions.Logging;
 
 public class GoalService : IGoalService
 {
     private readonly IGoalRepository goalRepository;
+    private readonly ILogger<GoalService> logger;
 
-    public GoalService(IGoalRepository goalRepository)
+    public GoalService
+    (
+        IGoalRepository goalRepository,
+        ILogger<GoalService> logger
+    )
     {
         this.goalRepository = goalRepository;
+        this.logger = logger;
     }
 
     public async Task<ServiceResult<IEnumerable<GoalDto>>> GetAllAsync()
@@ -26,6 +33,7 @@ public class GoalService : IGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get all goals");
         }
         return result;
     }
@@ -53,6 +61,7 @@ public class GoalService : IGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get goal by id");
         }
         return result;
     }
@@ -76,6 +85,7 @@ public class GoalService : IGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to create goal");
         }
         return result;
     }
@@ -106,6 +116,7 @@ public class GoalService : IGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to update goal");
         }
         return result;
     }
@@ -135,6 +146,7 @@ public class GoalService : IGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to delete goal");
         }
         return result;
     }
@@ -165,6 +177,7 @@ public class GoalService : IGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to complete goal");
         }
         return result;
     }
@@ -189,9 +202,10 @@ public class GoalService : IGoalService
 
             result.SetResult(goal.ToTreeDto());
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get goal tree");
         }
         return result;
     }

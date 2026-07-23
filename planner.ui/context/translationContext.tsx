@@ -23,18 +23,19 @@ export const TranslationProvider = ({ children }: { children: ReactNode }) => {
         v => typeof v === "number"
       ) as number[];
 
-      const result: Record<number, string> = {};
+      const entries = await Promise.all(
+        keys.map(async (key) => {
+          const model: TranslationRequestModel = {
+            MessageKey: key as MessageKey,
+            Language: language,
+          };
 
-      for (const key of keys) {
-        const model: TranslationRequestModel = {
-          MessageKey: key as MessageKey,
-          Language: language
-        };
+          const value = await translateApi(model);
+          return [key, value] as const;
+        })
+      );
 
-        result[key] = await translateApi(model);
-      }
-
-      setTranslations(result);
+      setTranslations(Object.fromEntries(entries));
     };
 
     loadTranslations();

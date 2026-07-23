@@ -3,8 +3,9 @@ import { useRouter } from 'next/router';
 import { Goal, YearlyGoal } from '../../types/goal';
 import * as goalService from '../../services/goalService';
 import YearlyGoalsTable from './YearlyGoalsTable';
-import { t } from '../../services/translationService';
 import { useToast } from '../toast/ToastContext';
+import { useTranslation } from "@/context/translationContext";
+import { MessageKey } from '@/types/message-key';
 
 interface Props {
   id?: string;
@@ -20,34 +21,9 @@ const GoalForm: React.FC<Props> = ({ id: propId }) => {
   const [loading, setLoading] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  const [labelBack, setLabelBack] = useState('Back');
-  const [labelSave, setLabelSave] = useState('Save');
-  const [labelSaveClose, setLabelSaveClose] = useState('Save & Close');
-  const [labelTitle, setLabelTitle] = useState('Title');
-  const [labelDescription, setLabelDescription] = useState('Description');
-  const [labelStartDate, setLabelStartDate] = useState('Start Date');
-  const [labelDueDate, setLabelDueDate] = useState('Due Date');
+  const { t } = useTranslation();
 
   useEffect(() => {
-    // load translations
-    Promise.all([
-      t('Back'),
-      t('Save'),
-      t('SaveAndClose'),
-      t('Title'),
-      t('Description'),
-      t('Field_StartDate'),
-      t('Field_DueDate'),
-    ]).then((res) => {
-      setLabelBack(res[0] || 'Back');
-      setLabelSave(res[1] || 'Save');
-      setLabelSaveClose(res[2] || 'Save & Close');
-      setLabelTitle(res[3] || 'Title');
-      setLabelDescription(res[4] || 'Description');
-      setLabelStartDate(res[5] || 'Start Date');
-      setLabelDueDate(res[6] || 'Due Date');
-    });
-
     if (id) {
       setLoading(true);
       goalService
@@ -64,13 +40,13 @@ const GoalForm: React.FC<Props> = ({ id: propId }) => {
       if (id) {
         await goalService.updateGoal(id, model);
         setDirty(false);
-        t('Toast_Goal_Updated').then((m) => toast.show(m));
+        toast.show(t(MessageKey.Toast_Goal_Updated));
       } else {
         const created = await goalService.createGoal(model);
         if (created && created.id) {
           router.replace(`/goals/${created.id}/edit`);
           setDirty(false);
-          t('Toast_Goal_Created').then((m) => toast.show(m));
+          toast.show(t(MessageKey.Toast_Goal_Created));
         }
       }
     } catch (e) {
@@ -86,33 +62,33 @@ const GoalForm: React.FC<Props> = ({ id: propId }) => {
       <div className="card">
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           <button className="muted-btn" onClick={() => router.push('/goals')}>
-            {labelBack}
+            {t(MessageKey.Back)}
           </button>
           <button className="btn" onClick={() => handleSave(false)} disabled={loading || !model.title || !model.title.trim()}>
-            {labelSave}
+            {t(MessageKey.Save)}
           </button>
           <button className="btn" onClick={() => handleSave(true)} disabled={loading || !model.title || !model.title.trim()}>
-            {labelSaveClose}
+            {t(MessageKey.SaveAndClose)}
           </button>
         </div>
 
         <div style={{ display: 'grid', gap: 16 }}>
           <div>
-            <label>{labelTitle}</label>
+            <label>{t(MessageKey.Title)}</label>
             <input type="text" className="max-w-lg" value={model.title || ''} onChange={(e) => { setModel({ ...model, title: e.target.value }); setDirty(true); }} />
           </div>
           <div>
-            <label>{labelDescription}</label>
+            <label>{t(MessageKey.Description)}</label>
             <textarea className="max-w-lg" value={model.description || ''} onChange={(e) => { setModel({ ...model, description: e.target.value }); setDirty(true); }} />
           </div>
 
           <div style={{ display: 'flex', gap: 12 }}>
             <div>
-              <label>{labelStartDate}</label>
+              <label>{t(MessageKey.Field_StartDate)}</label>
               <input type="date" className="max-w-xs" value={model.startDate || ''} onChange={(e) => { setModel({ ...model, startDate: e.target.value }); setDirty(true); }} />
             </div>
             <div>
-              <label>{labelDueDate}</label>
+              <label>{t(MessageKey.Field_DueDate)}</label>
               <input type="date" className="max-w-xs" value={model.dueDate || ''} onChange={(e) => { setModel({ ...model, dueDate: e.target.value }); setDirty(true); }} />
             </div>
           </div>

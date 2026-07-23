@@ -44,5 +44,11 @@ public enum MessageKey
     Operation_Failed = 39,
     DailyGoal_NotFound = 40,
     MonthlyGoal_NotFound = 41,
-    WeeklyGoal_NotFound = 42
+    WeeklyGoal_NotFound = 42,
+    Loading = 43,
+    NoGoals = 44,
+    Completed = 45,
+    YearlyGoals = 46,
+    Target = 47,
+    Plan = 48
 }

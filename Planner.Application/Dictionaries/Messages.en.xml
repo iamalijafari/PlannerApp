@@ -39,4 +39,9 @@
   <Message key="MonthlyGoal_NotFound">Monthly goal not found</Message>
   <Message key="WeeklyGoal_NotFound">Yearly goal not found</Message>
   <Message key="Plan">Plan</Message>
+  <Message key="Loading">Loading...</Message>
+  <Message key="NoGoals">No goals found. Click Add to create your first goal.</Message>
+  <Message key="Completed">Completed</Message>
+  <Message key="YearlyGoals">Yearly goals</Message>
+  <Message key="Target">Target</Message>
 </Messages>

@@ -5,16 +5,23 @@ using Planner.Application.Mappers.YearlyGoal;
 using Planner.Domain.Entities;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.Enumerations;
+using Microsoft.Extensions.Logging;
 
 namespace Planner.Application.Services;
 
 public class YearlyGoalService : IYearlyGoalService
 {
     private readonly IYearlyGoalRepository yearlyGoalRepository;
+    private readonly ILogger<GoalService> logger;
 
-    public YearlyGoalService(IYearlyGoalRepository yearlyGoalRepository)
+    public YearlyGoalService
+    (
+        IYearlyGoalRepository yearlyGoalRepository,
+        ILogger<GoalService> logger
+    )
     {
         this.yearlyGoalRepository = yearlyGoalRepository;
+        this.logger = logger;
     }
 
     public async Task<ServiceResult<IEnumerable<YearlyGoalDto>>> GetAllByGoalIdAsync(Guid goalId)
@@ -34,6 +41,7 @@ public class YearlyGoalService : IYearlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get all yearly goals by goal id");
         }
         return result;
     }
@@ -61,6 +69,7 @@ public class YearlyGoalService : IYearlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get yearly goal by id");
         }
         return result;
     }
@@ -84,6 +93,7 @@ public class YearlyGoalService : IYearlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to create yearly goal");
         }
         return result;
     }
@@ -114,6 +124,7 @@ public class YearlyGoalService : IYearlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to update yearly goal");
         }
         return result;
     }
@@ -143,6 +154,7 @@ public class YearlyGoalService : IYearlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to delete yearly goal");
         }
         return result;
     }
@@ -173,6 +185,7 @@ public class YearlyGoalService : IYearlyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to complete yearly goal");
         }
         return result;
     }

@@ -52,7 +52,7 @@ export default function GoalList({ goals, onComplete, onDelete }: GoalListProps)
 
             <div className="flex flex-col items-end gap-2">
               <Link href={`/goals/${g.id}/edit`} className="muted-btn text-sm">{t(MessageKey.Edit)}</Link>
-              <Link href={`/goals/${g.id}/tree`} className="muted-btn text-sm">{t(MessageKey.Edit)} {t(MessageKey.Plan)}</Link>
+              <Link href={`/goals/${g.id}/tree`} className="muted-btn text-sm">{t(MessageKey.Plan)}</Link>
               {!g.isCompleted && (
                 <button className="btn text-sm" onClick={() => handleCompleteClick(g.id)}>{t(MessageKey.Complete)}</button>
               )}

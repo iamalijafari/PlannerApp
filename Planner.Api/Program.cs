@@ -53,6 +53,12 @@ builder.Services.AddDbContext<PlannerDbContext>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PlannerDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseCors("AllowUI");
 
 if (app.Environment.IsDevelopment())
@@ -64,5 +70,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapControllers();
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.Run();

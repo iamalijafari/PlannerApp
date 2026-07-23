@@ -2,7 +2,7 @@ namespace Planner.Application.DTOs.WeeklyGoal;
 
 public record WeeklyGoalDto(
     Guid Id,
-    Guid GoalId,
+    Guid MonthlyGoalId,
     string Title,
     string Description,
     DateTime CreatedAt,

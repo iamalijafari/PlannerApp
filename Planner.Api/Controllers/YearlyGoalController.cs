@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Planner.Application.Interfaces.Services;
 using Planner.Application.DTOs.YearlyGoal;
 using Planner.Application.DTOs.Utility;
-using System.Collections.Generic;
 using Planner.Api.Mappers.YearlyGoal;
 using Planner.Api.Mappers.General;
 using Planner.Api.DTOs.Requests.YearlyGoal;

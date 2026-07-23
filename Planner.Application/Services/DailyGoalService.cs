@@ -5,16 +5,23 @@ using Planner.Application.Mappers.DailyGoal;
 using Planner.Domain.Entities;
 using Planner.Application.DTOs.Utility;
 using Planner.Application.Enumerations;
+using Microsoft.Extensions.Logging;
 
 namespace Planner.Application.Services;
 
 public class DailyGoalService : IDailyGoalService
 {
     private readonly IDailyGoalRepository dailyGoalRepository;
+    private readonly ILogger<DailyGoalService> logger;
 
-    public DailyGoalService(IDailyGoalRepository dailyGoalRepository)
+    public DailyGoalService
+    (
+        IDailyGoalRepository dailyGoalRepository,
+        ILogger<DailyGoalService> logger
+    )
     {
         this.dailyGoalRepository = dailyGoalRepository;
+        this.logger = logger;
     }
 
     public async Task<ServiceResult<IEnumerable<DailyGoalDto>>> GetAllByGoalIdAsync(Guid goalId)
@@ -34,6 +41,7 @@ public class DailyGoalService : IDailyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get all daily goals by goal id");
         }
         return result;
     }
@@ -61,6 +69,7 @@ public class DailyGoalService : IDailyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.ServerError);
+            logger.LogError(ex, "Faild to get daily goal by id");
         }
         return result;
     }
@@ -70,13 +79,13 @@ public class DailyGoalService : IDailyGoalService
         ServiceResult<DailyGoalDto> result = new();
         try
         {
-            if (dto == null || dto.GoalId == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title))
+            if (dto == null || dto.WeeklyGoalId == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title))
             {
                 result.SetError(MessageKey.Invalid_Input);
                 return result;
             }
 
-            DailyGoal dailyGoal = new DailyGoal(dto.GoalId, dto.Title, dto.Description, dto.DueDate);
+            DailyGoal dailyGoal = new DailyGoal(dto.WeeklyGoalId, dto.Title, dto.Description, dto.DueDate);
             await dailyGoalRepository.AddAsync(dailyGoal);
             await dailyGoalRepository.SaveChangesAsync();
             result.SetResult(dailyGoal.ToDto());
@@ -84,6 +93,7 @@ public class DailyGoalService : IDailyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to create daily goal");
         }
         return result;
     }
@@ -114,6 +124,7 @@ public class DailyGoalService : IDailyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to update daily goal");
         }
         return result;
     }
@@ -143,6 +154,7 @@ public class DailyGoalService : IDailyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to delete daily goal");
         }
         return result;
     }
@@ -173,6 +185,7 @@ public class DailyGoalService : IDailyGoalService
         catch (Exception ex)
         {
             result.SetError(MessageKey.Operation_Failed);
+            logger.LogError(ex, "Faild to complete daily goal");
         }
         return result;
     }
