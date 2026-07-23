@@ -50,5 +50,18 @@ public enum MessageKey
     Completed = 45,
     YearlyGoals = 46,
     Target = 47,
-    Plan = 48
+    Plan = 48,
+    Close = 49,
+    GoalTreeTitle = 50,
+    Yearly = 51,
+    Monthly = 52,
+    Weekly = 53,
+    Daily = 54,
+    NoYearlyGoals = 55,
+    DeleteTreeItemConfirm = 56,
+    DeleteTreeItemWithChildrenConfirm = 57,
+    Language = 58,
+    Year = 59,
+    Month = 60,
+    Day = 61
 }

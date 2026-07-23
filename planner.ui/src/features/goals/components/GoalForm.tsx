@@ -1,73 +1,114 @@
 "use client";
 
-import { useState } from "react";
-import { CreateGoalRequestModel } from "@/src/features/goals/types/create-goal-request-model";
-import { useApiResponse } from "@/utils/use-api-response";
-import Modal from "@/components/Modal";
-import { useTranslation } from "@/context/translationContext";
+import { FormEvent, useEffect, useState } from "react";
+import DatePicker, { todayIso } from "@/components/DatePicker";
+import { useTranslation } from "@/context/translation-context";
 import { MessageKey } from "@/types/message-key";
-import DatePicker from "@/components/DatePicker";
+import { CreateGoalRequestModel } from "../types/create-goal-request-model";
 
 interface GoalFormProps {
-  onSubmit: (model: CreateGoalRequestModel) => void | Promise<void>;
+  heading: string;
+  initialValue?: CreateGoalRequestModel;
+  onSubmit: (model: CreateGoalRequestModel) => Promise<boolean>;
+  onCancel?: () => void;
+  resetOnSuccess?: boolean;
 }
 
-export default function GoalForm({ onSubmit }: GoalFormProps) {
+const emptyGoal = (): CreateGoalRequestModel => ({
+  title: "",
+  description: "",
+  dueDate: todayIso(),
+});
+
+export default function GoalForm({
+  heading,
+  initialValue,
+  onSubmit,
+  onCancel,
+  resetOnSuccess = false,
+}: GoalFormProps) {
   const { t } = useTranslation();
-  const { handleResponse } = useApiResponse();
+  const [model, setModel] = useState<CreateGoalRequestModel>(
+    initialValue ?? emptyGoal,
+  );
+  const [isSaving, setIsSaving] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+  useEffect(() => {
+    if (initialValue) setModel(initialValue);
+  }, [initialValue]);
 
-  const submitHandler = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const request: CreateGoalRequestModel = { title: title, description: description, dueDate: dueDate };
+  const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
 
     try {
-      await onSubmit(request);
-      setTitle("");
-      setDescription("");
-      setDueDate("");
-    } catch (err) {
-      console.error(err);
-      setModalMessage(t(MessageKey.ServerError));
-      setModalOpen(true);
+      const wasSaved = await onSubmit({
+        ...model,
+        title: model.title.trim(),
+        description: model.description.trim(),
+      });
+      if (wasSaved && resetOnSuccess) setModel(emptyGoal());
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <>
-      <form onSubmit={submitHandler} className="card mb-6">
-        <h2 className="text-xl font-bold mb-4">{t(MessageKey.GoalFormTitle)}</h2>
+    <form onSubmit={submitHandler} className="card grid gap-4">
+      <h2 className="text-xl font-bold">{heading}</h2>
 
+      <label>
+        {t(MessageKey.Title)}
         <input
-          className="w-full border border-gray-200 dark:border-gray-700 rounded-md p-2 mb-3 bg-transparent"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          className="mt-1 w-full"
+          value={model.title}
+          onChange={(event) =>
+            setModel((current) => ({ ...current, title: event.target.value }))
+          }
           required
-          placeholder={t(MessageKey.Title)}
         />
+      </label>
 
+      <label>
+        {t(MessageKey.Description)}
         <textarea
-          className="w-full border border-gray-200 dark:border-gray-700 rounded-md p-2 mb-3 bg-transparent"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-          placeholder={t(MessageKey.Description)}
+          className="mt-1 w-full"
+          value={model.description}
+          onChange={(event) =>
+            setModel((current) => ({
+              ...current,
+              description: event.target.value,
+            }))
+          }
         />
+      </label>
 
-        <DatePicker value={dueDate} onChange={(d) => setDueDate(d)} />
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          {t(MessageKey.DueDate)}
+        </legend>
+        <DatePicker
+          value={model.dueDate}
+          onChange={(dueDate) =>
+            setModel((current) => ({ ...current, dueDate }))
+          }
+        />
+      </fieldset>
 
-        <div className="flex justify-end">
-          <button type="submit" className="btn">{t(MessageKey.Save)}</button>
-        </div>
-      </form>
-
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={t(MessageKey.ErrorTitle)} message={modalMessage} />
-    </>
+      <div className="flex justify-end gap-2">
+        {onCancel && (
+          <button type="button" className="muted-btn" onClick={onCancel}>
+            {t(MessageKey.Cancel)}
+          </button>
+        )}
+        <button
+          type="submit"
+          className="btn"
+          disabled={isSaving || !model.title.trim() || !model.dueDate}
+        >
+          {t(MessageKey.Save)}
+        </button>
+      </div>
+    </form>
   );
 }

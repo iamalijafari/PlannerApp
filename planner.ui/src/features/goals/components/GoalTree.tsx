@@ -1,83 +1,181 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { getGoalTree } from "@/src/features/goals/api/goal-tree-api";
-import { GoalTreeModel } from "@/src/features/goals/types/goal-tree-model";
+import DatePicker, { todayIso } from "@/components/DatePicker";
+import Modal from "@/components/Modal";
+import { useTranslation } from "@/context/translation-context";
+import { MessageKey } from "@/types/message-key";
+import { yearlyGoalApi } from "../api/goal-level-apis";
+import { getGoalTree } from "../api/goal-tree-api";
 import {
-  yearlyGoalApi,
-  monthlyGoalApi,
-  weeklyGoalApi,
-  dailyGoalApi,
-} from "@/src/features/goals/api/goal-level-apis";
-import GoalTreeNode, { LevelConfig } from "./GoalTreeNode";
-
-const LEVELS: LevelConfig[] = [
-  { api: yearlyGoalApi, label: "Yearly", childField: "monthlyGoals" },
-  { api: monthlyGoalApi, label: "Monthly", childField: "weeklyGoals" },
-  { api: weeklyGoalApi, label: "Weekly", childField: "dailyGoals" },
-  { api: dailyGoalApi, label: "Daily", childField: null },
-];
+  getTreeItems,
+  GoalTreeModel,
+} from "../types/goal-tree-model";
+import GoalTreeNode from "./GoalTreeNode";
 
 interface GoalTreeProps {
   goalId: string;
 }
 
 export default function GoalTree({ goalId }: GoalTreeProps) {
+  const { t } = useTranslation();
   const [tree, setTree] = useState<GoalTreeModel | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [addingYearly, setAddingYearly] = useState(false);
-  const [yTitle, setYTitle] = useState("");
-  const [yDescription, setYDescription] = useState("");
-  const [yDueDate, setYDueDate] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAddingYearly, setIsAddingYearly] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState(todayIso);
+  const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
 
-  const load = useCallback(async () => {
-    const res = await getGoalTree(goalId);
-    if (res.success) setTree(res.result);
-    setLoading(false);
+  const loadTree = useCallback(async () => {
+    try {
+      const response = await getGoalTree(goalId);
+      if (response.success) {
+        setTree(response.result);
+      } else {
+        setTree(null);
+        setErrorKey(response.messageKey);
+      }
+    } catch (error) {
+      console.error(`Failed to load goal tree ${goalId}:`, error);
+      setTree(null);
+      setErrorKey(MessageKey.ServerError);
+    } finally {
+      setIsLoading(false);
+    }
   }, [goalId]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    void loadTree();
+  }, [loadTree]);
 
-  async function handleAddYearly() {
-    if (!yTitle.trim()) return;
-    await yearlyGoalApi.create({ parentId: goalId, title: yTitle, description: yDescription, dueDate: yDueDate });
-    setYTitle("");
-    setYDescription("");
-    setYDueDate("");
-    setAddingYearly(false);
-    load();
+  const handleAddYearly = async () => {
+    if (!title.trim() || !dueDate) return;
+    setIsSaving(true);
+
+    try {
+      const response = await yearlyGoalApi.create({
+        parentId: goalId,
+        title: title.trim(),
+        description: description.trim(),
+        dueDate,
+      });
+      if (!response.success) {
+        setErrorKey(response.messageKey);
+        return;
+      }
+
+      setTitle("");
+      setDescription("");
+      setDueDate(todayIso());
+      setIsAddingYearly(false);
+      await loadTree();
+    } catch (error) {
+      console.error(`Failed to add yearly goal to ${goalId}:`, error);
+      setErrorKey(MessageKey.ServerError);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return <p className="status-message">{t(MessageKey.Loading)}</p>;
   }
 
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (!tree) return <p className="p-4">Goal not found.</p>;
-
   return (
-    <div className="card">
-      <h2 className="text-xl font-bold mb-4">{tree.title}</h2>
-
-      <button className="btn text-sm mb-4" onClick={() => setAddingYearly((v) => !v)}>
-        + Add Yearly Goal
-      </button>
-
-      {addingYearly && (
-        <div className="flex flex-col gap-2 mb-4 max-w-sm">
-          <input placeholder="Yearly goal title" value={yTitle} onChange={(e) => setYTitle(e.target.value)} />
-          <textarea placeholder="Description" value={yDescription} onChange={(e) => setYDescription(e.target.value)} />
-          <input type="date" value={yDueDate} onChange={(e) => setYDueDate(e.target.value)} />
-          <div className="flex gap-2">
-            <button className="btn text-sm" disabled={!yTitle.trim()} onClick={handleAddYearly}>Add</button>
-            <button className="muted-btn text-sm" onClick={() => setAddingYearly(false)}>Cancel</button>
+    <>
+      <section className="card">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-sky-600">
+              {t(MessageKey.GoalTreeTitle)}
+            </p>
+            <h1 className="mt-1 text-2xl font-bold">
+              {tree?.title ?? t(MessageKey.Goal_NotFound)}
+            </h1>
           </div>
+          <Link href="/goals" className="muted-btn text-sm">
+            {t(MessageKey.Back)}
+          </Link>
         </div>
-      )}
 
-      {tree.yearlyGoals.length === 0 && <p className="text-sm text-zinc-500">No yearly goals yet.</p>}
+        {tree && (
+          <>
+            <button
+              className="btn mb-5 text-sm"
+              onClick={() => setIsAddingYearly((current) => !current)}
+            >
+              {t(MessageKey.Add)} {t(MessageKey.Yearly)}
+            </button>
 
-      {tree.yearlyGoals.map((y) => (
-        <GoalTreeNode key={y.id} node={y} depth={0} levels={LEVELS} onChanged={load} />
-      ))}
-    </div>
+            {isAddingYearly && (
+              <div className="tree-form mb-6">
+                <label>
+                  {t(MessageKey.Title)}
+                  <input
+                    className="mt-1 w-full"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                  />
+                </label>
+                <label>
+                  {t(MessageKey.Description)}
+                  <textarea
+                    className="mt-1 w-full"
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
+                  />
+                </label>
+                <fieldset>
+                  <legend>{t(MessageKey.DueDate)}</legend>
+                  <DatePicker value={dueDate} onChange={setDueDate} />
+                </fieldset>
+                <div className="flex gap-2">
+                  <button
+                    className="btn text-sm"
+                    disabled={isSaving || !title.trim() || !dueDate}
+                    onClick={() => void handleAddYearly()}
+                  >
+                    {t(MessageKey.Add)}
+                  </button>
+                  <button
+                    className="muted-btn text-sm"
+                    disabled={isSaving}
+                    onClick={() => setIsAddingYearly(false)}
+                  >
+                    {t(MessageKey.Cancel)}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {tree.yearlyGoals.length === 0 ? (
+              <div className="empty-state">{t(MessageKey.NoYearlyGoals)}</div>
+            ) : (
+              <ul className="goal-tree">
+                {getTreeItems(tree).map((item) => (
+                  <GoalTreeNode
+                    key={item.id}
+                    node={item}
+                    onChanged={loadTree}
+                    onError={setErrorKey}
+                  />
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </section>
+
+      <Modal
+        isOpen={errorKey !== null}
+        onClose={() => setErrorKey(null)}
+        title={t(MessageKey.ErrorTitle)}
+        message={errorKey === null ? "" : t(errorKey)}
+        closeLabel={t(MessageKey.Close)}
+      />
+    </>
   );
 }

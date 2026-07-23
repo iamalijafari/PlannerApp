@@ -7,9 +7,16 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   message: string;
+  closeLabel: string;
 }
 
-export default function Modal({ isOpen, onClose, title, message }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  message,
+  closeLabel,
+}: ModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
@@ -59,21 +66,21 @@ export default function Modal({ isOpen, onClose, title, message }: ModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50" role="dialog" aria-modal="true">
-      <div ref={modalRef} className="bg-white rounded-lg p-6 w-96 shadow-lg" aria-labelledby="modal-title">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
+      <div ref={modalRef} className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900" aria-labelledby="modal-title">
         {title && (
           <h2 id="modal-title" className="text-lg font-bold mb-4">
             {title}
           </h2>
         )}
-        <p className="mb-4">{message}</p>
+        <p className="mb-4 text-sm text-zinc-700 dark:text-zinc-200">{message}</p>
         <div className="flex justify-end">
           <button
             ref={closeRef}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="btn"
             onClick={onClose}
           >
-            Close
+            {closeLabel}
           </button>
         </div>
       </div>

@@ -1,153 +1,326 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import DatePicker, { todayIso } from "@/components/DatePicker";
+import { useLanguage } from "@/context/language-context";
+import { useTranslation } from "@/context/translation-context";
+import { Language } from "@/types/language";
+import { MessageKey } from "@/types/message-key";
+import { ResponseModel } from "@/types/response-model";
+import {
+  dailyGoalApi,
+  monthlyGoalApi,
+  weeklyGoalApi,
+  yearlyGoalApi,
+} from "../api/goal-level-apis";
+import { GoalLevelApi } from "../api/goal-level-api-factory";
+import { GoalLevel, GoalTreeItem } from "../types/goal-tree-model";
 
-interface TreeNode {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  isCompleted: boolean;
-  [key: string]: any;
+interface LevelConfig {
+  api: GoalLevelApi;
+  labelKey: MessageKey;
+  childLevel: GoalLevel | null;
 }
 
-interface LevelApi {
-  create: (req: { parentId: string; title: string; description: string; dueDate: string }) => Promise<any>;
-  update: (req: { id: string; title: string; description: string; dueDate: string; isCompleted: boolean }) => Promise<any>;
-  remove: (id: string) => Promise<any>;
-  complete: (id: string) => Promise<any>;
-}
-
-export interface LevelConfig {
-  api: LevelApi;
-  label: string;
-  childField: string | null;
-}
+const LEVEL_CONFIG: Record<GoalLevel, LevelConfig> = {
+  yearly: {
+    api: yearlyGoalApi,
+    labelKey: MessageKey.Yearly,
+    childLevel: "monthly",
+  },
+  monthly: {
+    api: monthlyGoalApi,
+    labelKey: MessageKey.Monthly,
+    childLevel: "weekly",
+  },
+  weekly: {
+    api: weeklyGoalApi,
+    labelKey: MessageKey.Weekly,
+    childLevel: "daily",
+  },
+  daily: {
+    api: dailyGoalApi,
+    labelKey: MessageKey.Daily,
+    childLevel: null,
+  },
+};
 
 interface GoalTreeNodeProps {
-  node: TreeNode;
-  depth: number;
-  levels: LevelConfig[];
-  onChanged: () => void;
+  node: GoalTreeItem;
+  onChanged: () => Promise<void>;
+  onError: (messageKey: MessageKey) => void;
 }
 
-export default function GoalTreeNode({ node, depth, levels, onChanged }: GoalTreeNodeProps) {
-  const level = levels[depth];
-  const childLevel = levels[depth + 1] ?? null;
+export default function GoalTreeNode({
+  node,
+  onChanged,
+  onError,
+}: GoalTreeNodeProps) {
+  const { language } = useLanguage();
+  const { t } = useTranslation();
+  const config = LEVEL_CONFIG[node.level];
+  const childConfig = config.childLevel
+    ? LEVEL_CONFIG[config.childLevel]
+    : null;
 
-  const [editing, setEditing] = useState(false);
-  const [addingChild, setAddingChild] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAddingChild, setIsAddingChild] = useState(false);
   const [title, setTitle] = useState(node.title);
   const [description, setDescription] = useState(node.description);
-  const [dueDate, setDueDate] = useState(node.dueDate?.slice(0, 10) ?? "");
+  const [dueDate, setDueDate] = useState(node.dueDate.slice(0, 10));
   const [childTitle, setChildTitle] = useState("");
   const [childDescription, setChildDescription] = useState("");
-  const [childDueDate, setChildDueDate] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [childDueDate, setChildDueDate] = useState(todayIso);
+  const [isBusy, setIsBusy] = useState(false);
 
-  const children: TreeNode[] = level.childField ? (node[level.childField] ?? []) : [];
+  useEffect(() => {
+    if (isEditing) return;
+    setTitle(node.title);
+    setDescription(node.description);
+    setDueDate(node.dueDate.slice(0, 10));
+  }, [isEditing, node.description, node.dueDate, node.title]);
 
-  async function handleSave() {
-    setBusy(true);
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(
+        language === Language.fa ? "fa-IR-u-ca-persian" : "en",
+        { dateStyle: "medium" },
+      ),
+    [language],
+  );
+
+  const runMutation = async (
+    action: () => Promise<ResponseModel<unknown>>,
+  ) => {
+    setIsBusy(true);
     try {
-      await level.api.update({ id: node.id, title, description, dueDate, isCompleted: node.isCompleted });
-      setEditing(false);
-      onChanged();
+      const response = await action();
+      if (!response.success) {
+        onError(response.messageKey);
+        return false;
+      }
+      await onChanged();
+      return true;
+    } catch (error) {
+      console.error(`Failed to update ${node.level} goal ${node.id}:`, error);
+      onError(MessageKey.ServerError);
+      return false;
     } finally {
-      setBusy(false);
+      setIsBusy(false);
     }
-  }
+  };
 
-  async function handleComplete() {
-    setBusy(true);
-    try {
-      await level.api.complete(node.id);
-      onChanged();
-    } finally {
-      setBusy(false);
-    }
-  }
+  const handleSave = async () => {
+    if (!title.trim() || !dueDate) return;
+    const wasSaved = await runMutation(() =>
+      config.api.update({
+        id: node.id,
+        title: title.trim(),
+        description: description.trim(),
+        dueDate,
+        isCompleted: node.isCompleted,
+      }),
+    );
+    if (wasSaved) setIsEditing(false);
+  };
 
-  async function handleDelete() {
-    const message =
-      children.length > 0
-        ? `Delete "${node.title}" and its ${children.length} sub-item(s)? This cannot be undone.`
-        : `Delete "${node.title}"?`;
-    if (!confirm(message)) return;
+  const handleDelete = async () => {
+    const messageKey =
+      node.children.length > 0
+        ? MessageKey.DeleteTreeItemWithChildrenConfirm
+        : MessageKey.DeleteTreeItemConfirm;
+    const confirmed = window.confirm(
+      t(messageKey, {
+        title: node.title,
+        count: node.children.length,
+      }),
+    );
+    if (!confirmed) return;
+    await runMutation(() => config.api.remove(node.id));
+  };
 
-    setBusy(true);
-    try {
-      await level.api.remove(node.id);
-      onChanged();
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleAddChild() {
-    if (!childLevel || !childTitle.trim()) return;
-    setBusy(true);
-    try {
-      await childLevel.api.create({
+  const handleAddChild = async () => {
+    if (!childConfig || !childTitle.trim() || !childDueDate) return;
+    const wasAdded = await runMutation(() =>
+      childConfig.api.create({
         parentId: node.id,
-        title: childTitle,
-        description: childDescription,
+        title: childTitle.trim(),
+        description: childDescription.trim(),
         dueDate: childDueDate,
-      });
+      }),
+    );
+
+    if (wasAdded) {
       setChildTitle("");
       setChildDescription("");
-      setChildDueDate("");
-      setAddingChild(false);
-      onChanged();
-    } finally {
-      setBusy(false);
+      setChildDueDate(todayIso());
+      setIsAddingChild(false);
     }
-  }
+  };
 
   return (
-    <div style={{ marginLeft: depth * 20 }} className="border-l border-zinc-200 dark:border-zinc-800 pl-4 my-2">
-      {editing ? (
-        <div className="flex flex-col gap-2 mb-2 max-w-sm">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-          <div className="flex gap-2">
-            <button className="btn text-sm" disabled={busy} onClick={handleSave}>Save</button>
-            <button className="muted-btn text-sm" onClick={() => setEditing(false)}>Cancel</button>
+    <li className="tree-node">
+      <div className="tree-node-content">
+        {isEditing ? (
+          <div className="tree-form">
+            <label>
+              {t(MessageKey.Title)}
+              <input
+                className="mt-1 w-full"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+              />
+            </label>
+            <label>
+              {t(MessageKey.Description)}
+              <textarea
+                className="mt-1 w-full"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </label>
+            <fieldset>
+              <legend>{t(MessageKey.DueDate)}</legend>
+              <DatePicker value={dueDate} onChange={setDueDate} />
+            </fieldset>
+            <div className="flex gap-2">
+              <button
+                className="btn text-sm"
+                disabled={isBusy || !title.trim() || !dueDate}
+                onClick={() => void handleSave()}
+              >
+                {t(MessageKey.Save)}
+              </button>
+              <button
+                className="muted-btn text-sm"
+                disabled={isBusy}
+                onClick={() => setIsEditing(false)}
+              >
+                {t(MessageKey.Cancel)}
+              </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs uppercase text-zinc-400">{level.label}</span>
-          <span className={node.isCompleted ? "line-through text-zinc-400" : "font-medium"}>{node.title}</span>
-          {!node.isCompleted && (
-            <button className="muted-btn text-xs" disabled={busy} onClick={handleComplete}>Complete</button>
-          )}
-          <button className="muted-btn text-xs" onClick={() => setEditing(true)}>Edit</button>
-          <button className="muted-btn text-xs" disabled={busy} onClick={handleDelete}>Delete</button>
-          {childLevel && (
-            <button className="muted-btn text-xs" onClick={() => setAddingChild((v) => !v)}>
-              + Add {childLevel.label}
+        ) : (
+          <>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`level-badge level-${node.level}`}>
+                  {t(config.labelKey)}
+                </span>
+                <h3
+                  className={
+                    node.isCompleted
+                      ? "font-semibold text-zinc-400 line-through"
+                      : "font-semibold"
+                  }
+                >
+                  {node.title}
+                </h3>
+              </div>
+              {node.description && (
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                  {node.description}
+                </p>
+              )}
+              <p className="mt-2 text-xs text-zinc-500">
+                {t(MessageKey.DueDate)}:{" "}
+                {dateFormatter.format(new Date(node.dueDate))}
+              </p>
+            </div>
+
+            <div className="tree-actions">
+              {!node.isCompleted && (
+                <button
+                  className="muted-btn text-xs"
+                  disabled={isBusy}
+                  onClick={() =>
+                    void runMutation(() => config.api.complete(node.id))
+                  }
+                >
+                  {t(MessageKey.Complete)}
+                </button>
+              )}
+              <button
+                className="muted-btn text-xs"
+                disabled={isBusy}
+                onClick={() => setIsEditing(true)}
+              >
+                {t(MessageKey.Edit)}
+              </button>
+              <button
+                className="danger-btn text-xs"
+                disabled={isBusy}
+                onClick={() => void handleDelete()}
+              >
+                {t(MessageKey.Delete)}
+              </button>
+              {childConfig && (
+                <button
+                  className="muted-btn text-xs"
+                  disabled={isBusy}
+                  onClick={() => setIsAddingChild((current) => !current)}
+                >
+                  {t(MessageKey.Add)} {t(childConfig.labelKey)}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {isAddingChild && childConfig && (
+        <div className="tree-form ms-5 mt-3">
+          <label>
+            {t(MessageKey.Title)}
+            <input
+              className="mt-1 w-full"
+              value={childTitle}
+              onChange={(event) => setChildTitle(event.target.value)}
+            />
+          </label>
+          <label>
+            {t(MessageKey.Description)}
+            <textarea
+              className="mt-1 w-full"
+              value={childDescription}
+              onChange={(event) => setChildDescription(event.target.value)}
+            />
+          </label>
+          <fieldset>
+            <legend>{t(MessageKey.DueDate)}</legend>
+            <DatePicker value={childDueDate} onChange={setChildDueDate} />
+          </fieldset>
+          <div className="flex gap-2">
+            <button
+              className="btn text-sm"
+              disabled={isBusy || !childTitle.trim() || !childDueDate}
+              onClick={() => void handleAddChild()}
+            >
+              {t(MessageKey.Add)}
             </button>
-          )}
-        </div>
-      )}
-
-      {addingChild && childLevel && (
-        <div className="flex flex-col gap-2 mt-2 mb-2 max-w-sm">
-          <input placeholder={`${childLevel.label} title`} value={childTitle} onChange={(e) => setChildTitle(e.target.value)} />
-          <textarea placeholder="Description" value={childDescription} onChange={(e) => setChildDescription(e.target.value)} />
-          <input type="date" value={childDueDate} onChange={(e) => setChildDueDate(e.target.value)} />
-          <div className="flex gap-2">
-            <button className="btn text-sm" disabled={busy || !childTitle.trim()} onClick={handleAddChild}>Add</button>
-            <button className="muted-btn text-sm" onClick={() => setAddingChild(false)}>Cancel</button>
+            <button
+              className="muted-btn text-sm"
+              disabled={isBusy}
+              onClick={() => setIsAddingChild(false)}
+            >
+              {t(MessageKey.Cancel)}
+            </button>
           </div>
         </div>
       )}
 
-      {children.map((child) => (
-        <GoalTreeNode key={child.id} node={child} depth={depth + 1} levels={levels} onChanged={onChanged} />
-      ))}
-    </div>
+      {node.children.length > 0 && (
+        <ul className="tree-children">
+          {node.children.map((child) => (
+            <GoalTreeNode
+              key={child.id}
+              node={child}
+              onChanged={onChanged}
+              onError={onError}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
   );
 }

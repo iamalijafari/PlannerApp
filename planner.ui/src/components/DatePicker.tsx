@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { useLanguage } from "@/context/languageContext";
+import { useLanguage } from "@/context/language-context";
+import { useTranslation } from "@/context/translation-context";
 import { Language } from "@/types/language";
+import { MessageKey } from "@/types/message-key";
 
 interface DatePickerProps {
   value: string; // ISO date YYYY-MM-DD
@@ -102,8 +104,18 @@ function partsToIso(y: number, m: number, d: number) {
   return `${y}-${mm}-${dd}`;
 }
 
+export function todayIso() {
+  const today = new Date();
+  return partsToIso(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    today.getDate(),
+  );
+}
+
 export default function DatePicker({ value, onChange }: DatePickerProps) {
   const { language } = useLanguage();
+  const { t } = useTranslation();
 
   if (language === Language.en) {
     // Render three selects for Gregorian date (year, month, day)
@@ -119,7 +131,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
     return (
       <div className="flex gap-2 items-center mb-3">
         <select
-          aria-label="Gregorian year"
+          aria-label={t(MessageKey.Year)}
           className="border border-gray-200 dark:border-gray-700 rounded-md p-2"
           value={gy}
           onChange={(e) => {
@@ -138,7 +150,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         </select>
 
         <select
-          aria-label="Gregorian month"
+          aria-label={t(MessageKey.Month)}
           className="border border-gray-200 dark:border-gray-700 rounded-md p-2"
           value={gm}
           onChange={(e) => {
@@ -157,7 +169,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         </select>
 
         <select
-          aria-label="Gregorian day"
+          aria-label={t(MessageKey.Day)}
           className="border border-gray-200 dark:border-gray-700 rounded-md p-2"
           value={gd}
           onChange={(e) => {
@@ -190,7 +202,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
   return (
     <div className="flex gap-2 items-center mb-3">
       <select
-        aria-label="Jalali year"
+        aria-label={t(MessageKey.Year)}
         className="border border-gray-200 dark:border-gray-700 rounded-md p-2"
         value={jy}
         onChange={(e) => {
@@ -208,7 +220,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
       </select>
 
       <select
-        aria-label="Jalali month"
+        aria-label={t(MessageKey.Month)}
         className="border border-gray-200 dark:border-gray-700 rounded-md p-2"
         value={jm}
         onChange={(e) => {
@@ -228,7 +240,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
       </select>
 
       <select
-        aria-label="Jalali day"
+        aria-label={t(MessageKey.Day)}
         className="border border-gray-200 dark:border-gray-700 rounded-md p-2"
         value={jd}
         onChange={(e) => {

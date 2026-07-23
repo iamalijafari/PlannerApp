@@ -1,73 +1,121 @@
 "use client";
 
-import { useState } from "react";
-import { GoalResponseModel } from "@/src/features/goals/types/goal-response-model";
-import Modal from "@/components/Modal";
 import Link from "next/link";
-import { useTranslation } from "@/context/translationContext";
+import { useState } from "react";
+import { useLanguage } from "@/context/language-context";
+import { useTranslation } from "@/context/translation-context";
+import { Language } from "@/types/language";
 import { MessageKey } from "@/types/message-key";
+import { GoalResponseModel } from "../types/goal-response-model";
 
 interface GoalListProps {
   goals: GoalResponseModel[];
-  onComplete: (id: string) => void | Promise<void>;
-  onDelete: (id: string) => void | Promise<void>;
+  onComplete: (id: string) => Promise<boolean>;
+  onDelete: (id: string) => Promise<boolean>;
 }
 
-export default function GoalList({ goals, onComplete, onDelete }: GoalListProps) {
+export default function GoalList({
+  goals,
+  onComplete,
+  onDelete,
+}: GoalListProps) {
+  const { language } = useLanguage();
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+  const [busyGoalId, setBusyGoalId] = useState<string | null>(null);
 
-  const handleCompleteClick = async (id: string) => {
-    try { await onComplete(id); } 
-    catch (err: unknown) {
-      setModalMessage(err instanceof Error ? err.message : t(MessageKey.ServerError));
-      setModalOpen(true);
+  const dateFormatter = new Intl.DateTimeFormat(
+    language === Language.fa ? "fa-IR-u-ca-persian" : "en",
+    { dateStyle: "medium" },
+  );
+
+  const runAction = async (
+    goalId: string,
+    action: (id: string) => Promise<boolean>,
+  ) => {
+    setBusyGoalId(goalId);
+    try {
+      await action(goalId);
+    } finally {
+      setBusyGoalId(null);
     }
   };
 
-  const handleDeleteClick = async (id: string) => {
-    try { await onDelete(id); } 
-    catch (err: unknown) {
-      setModalMessage(err instanceof Error ? err.message : t(MessageKey.ServerError));
-      setModalOpen(true);
-    }
+  const handleDelete = async (goal: GoalResponseModel) => {
+    if (!window.confirm(t(MessageKey.Goal_Delete_Confirm))) return;
+    await runAction(goal.id, onDelete);
   };
 
   return (
-    <>
-      <h2 className="text-2xl font-semibold mb-4">{t(MessageKey.GoalListTitle)}</h2>
+    <section aria-labelledby="goal-list-title">
+      <h2 id="goal-list-title" className="mb-4 text-2xl font-semibold">
+        {t(MessageKey.GoalListTitle)}
+      </h2>
 
-      <div className="space-y-4">
-        {goals.map((g) => (
-          <div
-            key={g.id}
-            className={`p-4 rounded-lg shadow-sm bg-white dark:bg-[#0b0b0b] flex items-start justify-between ${g.isCompleted ? "opacity-60" : ""}`}
-          >
-            <div className="pr-4">
-              <h3 className={`text-lg font-medium ${g.isCompleted ? "line-through" : ""}`}>{g.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{g.description}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{t(MessageKey.DueDate)}: {g.dueDate}</p>
-            </div>
-
-            <div className="flex flex-col items-end gap-2">
-              <Link href={`/goals/${g.id}/edit`} className="muted-btn text-sm">{t(MessageKey.Edit)}</Link>
-              <Link href={`/goals/${g.id}/tree`} className="muted-btn text-sm">{t(MessageKey.Plan)}</Link>
-              {!g.isCompleted && (
-                <button className="btn text-sm" onClick={() => handleCompleteClick(g.id)}>{t(MessageKey.Complete)}</button>
-              )}
-              <button
-                className="muted-btn text-sm"
-                onClick={() => handleDeleteClick(g.id)}
+      {goals.length === 0 ? (
+        <div className="empty-state">{t(MessageKey.Goals_Empty)}</div>
+      ) : (
+        <div className="space-y-4">
+          {goals.map((goal) => {
+            const isBusy = busyGoalId === goal.id;
+            return (
+              <article
+                key={goal.id}
+                className={`goal-card ${goal.isCompleted ? "opacity-65" : ""}`}
               >
-                {t(MessageKey.Delete)}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+                <div className="min-w-0 flex-1">
+                  <h3
+                    className={`text-lg font-semibold ${
+                      goal.isCompleted ? "line-through" : ""
+                    }`}
+                  >
+                    {goal.title}
+                  </h3>
+                  {goal.description && (
+                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+                      {goal.description}
+                    </p>
+                  )}
+                  <p className="mt-3 text-xs text-zinc-500">
+                    {t(MessageKey.DueDate)}:{" "}
+                    {dateFormatter.format(new Date(goal.dueDate))}
+                  </p>
+                </div>
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={t(MessageKey.ErrorTitle)} message={modalMessage} />
-    </>
+                <div className="actions">
+                  <Link
+                    href={`/goals/${goal.id}/edit`}
+                    className="muted-btn text-sm"
+                  >
+                    {t(MessageKey.Edit)}
+                  </Link>
+                  <Link
+                    href={`/goals/${goal.id}/tree`}
+                    className="muted-btn text-sm"
+                  >
+                    {t(MessageKey.Plan)}
+                  </Link>
+                  {!goal.isCompleted && (
+                    <button
+                      className="btn text-sm"
+                      disabled={isBusy}
+                      onClick={() => void runAction(goal.id, onComplete)}
+                    >
+                      {t(MessageKey.Complete)}
+                    </button>
+                  )}
+                  <button
+                    className="danger-btn text-sm"
+                    disabled={isBusy}
+                    onClick={() => void handleDelete(goal)}
+                  >
+                    {t(MessageKey.Delete)}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </section>
   );
 }
