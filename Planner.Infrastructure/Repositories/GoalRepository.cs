@@ -20,7 +20,9 @@ public class GoalRepository : IGoalRepository
 
     public async Task<IEnumerable<Domain.Entities.Goal>> GetAllAsync()
     {
-        return await context.Goals.ToListAsync();
+        return await context.Goals
+            .OrderBy(goal => goal.DueDate)
+            .ToListAsync();
     }
 
     public async Task AddAsync(Domain.Entities.Goal goal)
@@ -28,9 +30,10 @@ public class GoalRepository : IGoalRepository
         await context.Goals.AddAsync(goal);
     }
 
-    public async Task UpdateAsync(Domain.Entities.Goal goal)
+    public Task UpdateAsync(Domain.Entities.Goal goal)
     {
         context.Goals.Update(goal);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Guid id)
@@ -45,5 +48,15 @@ public class GoalRepository : IGoalRepository
     public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
+    }
+
+    public async Task<Domain.Entities.Goal> GetTreeByIdAsync(Guid id)
+    {
+        return await context.Goals
+            .Include(g => g.YearlyPlans)
+                .ThenInclude(y => y.MonthlyPlans)
+                    .ThenInclude(m => m.WeeklyPlans)
+                        .ThenInclude(w => w.DailyPlans)
+            .FirstOrDefaultAsync(g => g.Id == id);
     }
 }

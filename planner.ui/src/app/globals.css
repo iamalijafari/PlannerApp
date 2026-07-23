@@ -1,132 +1,158 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #f6f7fb;
+  --foreground: #18181b;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #09090b;
+    --foreground: #f4f4f5;
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
+  min-height: 100vh;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* make sizing predictable and avoid overflow caused by padding */
-*, *::before, *::after { box-sizing: border-box; }
+button,
+a,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
 
-/* Page container used by some pages to constrain width and add spacing */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.app-header {
+  @apply sticky top-0 z-20 flex items-center justify-between border-b border-zinc-200/80 bg-white/90 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90;
+}
+
+.app-brand {
+  @apply text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100;
+}
+
+.language-selector {
+  margin: 0;
+}
+
 .app-container {
-  max-width: 48rem; /* matches container width */
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
+  @apply mx-auto w-full max-w-4xl px-4 py-8;
 }
 
-/* Forms and layout */
-.page-header {
-  @apply mb-6;
+label,
+legend {
+  @apply block text-sm font-medium text-zinc-600 dark:text-zinc-400;
 }
 
-label {
-  @apply block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2;
+input,
+textarea,
+select {
+  color: inherit;
 }
 
-input[type="text"], input[type="date"], input[type="number"], textarea {
-  @apply rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#0b0b0b] px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100;
-  box-sizing: border-box;
+input[type="text"],
+input[type="date"],
+input[type="number"],
+textarea,
+.tree-form input {
+  @apply rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100;
 }
 
 textarea {
-  @apply min-h-[96px] resize-vertical;
-}
-
-.goal-card {
-  @apply bg-white dark:bg-[#071024] rounded-xl shadow-md p-4 border border-zinc-100 dark:border-zinc-800;
-  display: flex;
-  flex-direction: column;
-}
-
-/* On wider screens show goal cards in a row with actions on the right */
-@media (min-width: 768px) {
-  .goal-card {
-    flex-direction: row;
-  }
-}
-
-/* allow inner text elements to shrink so actions don't overflow */
-.goal-card > div {
-  min-width: 0;
-}
-}
-
-.goal-title {
-  @apply text-lg font-semibold text-zinc-900 dark:text-zinc-100;
-}
-
-.goal-desc {
-  @apply text-sm text-zinc-600 dark:text-zinc-300 mt-1;
-}
-
-.actions > button {
-  @apply ml-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm;
-}
-
-.primary-btn {
-  @apply bg-sky-600 text-white hover:bg-sky-700;
-}
-
-.muted-btn {
-  @apply bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200;
-}
-
-.yearly-row {
-  @apply flex items-center gap-4 p-3 rounded-md border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-[#041025];
-}
-
-.toast {
-  @apply bg-black/90 text-white px-4 py-2 rounded-lg shadow-lg;
-}
-
-/* Base utilities and component resets */
-.btn {
-  @apply inline-flex items-center justify-center px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700;
+  @apply min-h-24 resize-y;
 }
 
 .card {
-  @apply bg-white dark:bg-[#0b0b0b] rounded-lg shadow p-4;
+  @apply rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-7 dark:border-zinc-800 dark:bg-zinc-900;
 }
 
-.container {
-  max-width: 48rem; /* matches max-w-2xl */
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+.goal-card {
+  @apply flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:flex-row sm:items-start dark:border-zinc-800 dark:bg-zinc-900;
 }
 
-/* Make action groups wrap on small screens so buttons don't overflow */
-.actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
+.actions,
+.tree-actions {
+  @apply flex shrink-0 flex-wrap items-center gap-2;
+}
+
+.tree-actions {
+  @apply sm:max-w-64 sm:justify-end;
+}
+
+.btn,
+.muted-btn,
+.danger-btn {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition active:scale-[0.98];
+}
+
+.btn {
+  @apply bg-sky-600 text-white shadow-sm hover:bg-sky-700;
+}
+
+.muted-btn {
+  @apply border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800;
+}
+
+.danger-btn {
+  @apply border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300;
+}
+
+.empty-state,
+.status-message {
+  @apply rounded-xl border border-dashed border-zinc-300 px-5 py-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400;
+}
+
+.goal-tree,
+.tree-children {
+  @apply m-0 list-none p-0;
+}
+
+.tree-node {
+  @apply relative mt-3;
+}
+
+.tree-node-content {
+  @apply flex flex-col gap-4 rounded-xl border border-zinc-200 bg-zinc-50 p-4 sm:flex-row sm:items-start dark:border-zinc-700 dark:bg-zinc-950/60;
+}
+
+.tree-children {
+  @apply ms-4 border-s border-zinc-300 ps-4 sm:ms-7 sm:ps-6 dark:border-zinc-700;
+}
+
+.tree-form {
+  @apply grid max-w-xl gap-3 rounded-xl border border-sky-200 bg-sky-50/70 p-4 dark:border-sky-900 dark:bg-sky-950/20;
+}
+
+.level-badge {
+  @apply rounded-full px-2.5 py-1 text-xs font-semibold;
+}
+
+.level-yearly {
+  @apply bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300;
+}
+
+.level-monthly {
+  @apply bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300;
+}
+
+.level-weekly {
+  @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300;
+}
+
+.level-daily {
+  @apply bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300;
 }

@@ -1,14 +1,16 @@
+using Planner.Domain.Utilities;
+
 namespace Planner.Domain.Entities;
 
 public class Goal
 {
     public Guid Id { get; private set; }
-    public string Title { get; private set; }
-    public string Description { get; private set; }
+    public string Title { get; private set; } = null!;
+    public string Description { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public DateTime DueDate { get; private set; }
     public bool IsCompleted { get; private set; }
-    public ICollection<YearlyGoal> YearlyGoals { get; private set; } = new List<YearlyGoal>();
+    public ICollection<YearlyPlan> YearlyPlans { get; private set; } = new List<YearlyPlan>();
 
     private Goal() { }
 
@@ -18,7 +20,7 @@ public class Goal
         this.Title = Title;
         this.Description = Description;
         CreatedAt = DateTime.UtcNow;
-        this.DueDate = DueDate.ToUniversalTime();
+        this.DueDate = UtcDateTime.Normalize(DueDate);
         IsCompleted = false;
     }
 
@@ -36,7 +38,7 @@ public class Goal
 
         Title = title;
         Description = description;
-        DueDate = dueDate;
+        DueDate = UtcDateTime.Normalize(dueDate);
         IsCompleted = isCompleted;
     }
 }

@@ -1,0 +1,46 @@
+# Multi-stage build for ASP.NET Core 9.0
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy solution and project files
+COPY ["PlannerApp.sln", "./"]
+COPY ["Planner.Api/Planner.Api.csproj", "Planner.Api/"]
+COPY ["Planner.Application/Planner.Application.csproj", "Planner.Application/"]
+COPY ["Planner.Domain/Planner.Domain.csproj", "Planner.Domain/"]
+COPY ["Planner.Infrastructure/Planner.Infrastructure.csproj", "Planner.Infrastructure/"]
+
+# Restore only the deployable API graph. Test dependencies are restored by CI,
+# but they are not needed in the production image.
+RUN dotnet restore "Planner.Api/Planner.Api.csproj"
+
+# Copy source code
+COPY ["Planner.Api/", "Planner.Api/"]
+COPY ["Planner.Application/", "Planner.Application/"]
+COPY ["Planner.Domain/", "Planner.Domain/"]
+COPY ["Planner.Infrastructure/", "Planner.Infrastructure/"]
+
+# Build the application
+WORKDIR "/src/Planner.Api"
+RUN dotnet build "Planner.Api.csproj" -c Release -o /app/build
+
+# Publish the application
+FROM build AS publish
+RUN dotnet publish "Planner.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=publish /app/publish .
+
+# Expose port
+EXPOSE 5010
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:5010/health || exit 1
+
+# Run application
+ENTRYPOINT ["dotnet", "Planner.Api.dll"]

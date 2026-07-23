@@ -6,7 +6,7 @@ namespace Planner.Application.DTOs.Utility;
 public class ServiceResult<T>
 {
     public bool Success { get; private set; }
-    public T Result { get; private set; }
+    public T Result { get; private set; } = default!;
     public MessageKey MessageKey { get; private set; }
 
     public void SetResult(T result)

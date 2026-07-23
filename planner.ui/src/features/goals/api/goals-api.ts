@@ -1,47 +1,45 @@
-"use client";
-
-import { CreateGoalRequestModel } from "@/src/features/goals/types/create-goal-request-model";
-import { GoalResponseModel } from "@/src/features/goals/types/goal-response-model";
+import { apiRequest } from "@/services/api-client";
 import { ResponseModel } from "@/types/response-model";
+import { CreateGoalRequestModel } from "../types/create-goal-request-model";
+import { GoalResponseModel } from "../types/goal-response-model";
 
-const API_BASE = "http://localhost:5010/api/goal";
-
-export async function getGoals(): Promise<ResponseModel<GoalResponseModel[]>> {
-  const res = await fetch(API_BASE, { cache: "no-store" });
-  return res.json();
+export interface UpdateGoalRequestModel extends CreateGoalRequestModel {
+  isCompleted: boolean;
 }
 
-export async function getGoal(id: string): Promise<ResponseModel<GoalResponseModel>> {
-  const res = await fetch(`${API_BASE}/${id}`, { cache: "no-store" });
-  return res.json();
+export function getGoals(): Promise<ResponseModel<GoalResponseModel[]>> {
+  return apiRequest<GoalResponseModel[]>("/goal");
 }
 
-export async function createGoal(
-  request: CreateGoalRequestModel
-): Promise<ResponseModel<GoalResponseModel>> {
-  const res = await fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-  });
-  return res.json();
-}
-
-export async function updateGoal(
+export function getGoal(
   id: string,
-  request: Partial<CreateGoalRequestModel>
-): Promise<ResponseModel<boolean>> {
-  const res = await fetch(`${API_BASE}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-  });
-  return res.json();
+): Promise<ResponseModel<GoalResponseModel>> {
+  return apiRequest<GoalResponseModel>(`/goal/${id}`);
 }
 
-export async function deleteGoal(id: string): Promise<ResponseModel<boolean>> {
-  const res = await fetch(`${API_BASE}/${id}`, {
-    method: "DELETE",
+export function createGoal(
+  request: CreateGoalRequestModel,
+): Promise<ResponseModel<GoalResponseModel>> {
+  return apiRequest<GoalResponseModel>("/goal", {
+    method: "POST",
+    body: JSON.stringify(request),
   });
-  return res.json();
+}
+
+export function updateGoal(
+  id: string,
+  request: UpdateGoalRequestModel,
+): Promise<ResponseModel<boolean>> {
+  return apiRequest<boolean>(`/goal/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(request),
+  });
+}
+
+export function deleteGoal(id: string): Promise<ResponseModel<boolean>> {
+  return apiRequest<boolean>(`/goal/${id}`, { method: "DELETE" });
+}
+
+export function completeGoal(id: string): Promise<ResponseModel<boolean>> {
+  return apiRequest<boolean>(`/goal/${id}/complete`, { method: "PUT" });
 }

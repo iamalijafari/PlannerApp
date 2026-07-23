@@ -7,6 +7,7 @@ using Planner.Infrastructure.Repositories;
 using Planner.Application.Utilities;
 using Planner.Api.Middlewares;
 using Planner.Application.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,6 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowUI", policy =>
     {
-        // Allow UI origins during development. Use a restrictive policy in production.
         policy
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -32,15 +32,25 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    string xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+});
 
 builder.Services.AddSingleton<ITranslationUtility, TranslationUtility>();
 
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
-builder.Services.AddScoped<IYearlyGoalRepository, YearlyGoalRepository>();
+builder.Services.AddScoped<IYearlyPlanRepository, YearlyPlanRepository>();
+builder.Services.AddScoped<IMonthlyPlanRepository, MonthlyPlanRepository>();
+builder.Services.AddScoped<IWeeklyPlanRepository, WeeklyPlanRepository>();
+builder.Services.AddScoped<IDailyPlanRepository, DailyPlanRepository>();
 
 builder.Services.AddScoped<IGoalService, GoalService>();
-builder.Services.AddScoped<IYearlyGoalService, YearlyGoalService>();
+builder.Services.AddScoped<IYearlyPlanService, YearlyPlanService>();
+builder.Services.AddScoped<IMonthlyPlanService, MonthlyPlanService>();
+builder.Services.AddScoped<IWeeklyPlanService, WeeklyPlanService>();
+builder.Services.AddScoped<IDailyPlanService, DailyPlanService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 
 builder.Services.AddDbContext<PlannerDbContext>(options =>
@@ -48,9 +58,15 @@ builder.Services.AddDbContext<PlannerDbContext>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PlannerDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseCors("AllowUI");
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -59,5 +75,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapControllers();
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.Run();
