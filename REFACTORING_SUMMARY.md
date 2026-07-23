@@ -2,7 +2,7 @@
 
 **Updated:** 24 July 2026
 
-**Branch:** `code-review-refactor-docker-setup`
+**Branch:** `main`
 
 ## Outcome
 
@@ -57,14 +57,14 @@ The Docker build uses multi-stage API and UI images. Docker Compose starts Postg
 
 ## Validation
 
-| Check | Location |
-| --- | --- |
-| Backend restore/build/test/coverage | GitHub Actions `backend` job |
-| ESLint, TypeScript, Next.js build | Local commands and GitHub Actions `frontend` job |
-| API and UI container builds | GitHub Actions `containers` job |
-| English/Persian message-key parity | Repository consistency check |
-| XML dictionary well-formedness | Repository consistency check |
-| README links and asset dimensions | Repository consistency check |
+| Check                               | Location                                         |
+| ----------------------------------- | ------------------------------------------------ |
+| Backend restore/build/test/coverage | GitHub Actions `backend` job                     |
+| ESLint, TypeScript, Next.js build   | Local commands and GitHub Actions `frontend` job |
+| API and UI container builds         | GitHub Actions `containers` job                  |
+| English/Persian message-key parity  | Repository consistency check                     |
+| XML dictionary well-formedness      | Repository consistency check                     |
+| README links and asset dimensions   | Repository consistency check                     |
 
 The local authoring environment did not include the .NET SDK or Docker CLI, so the committed GitHub Actions workflow is the authoritative backend and container validation environment.
 
