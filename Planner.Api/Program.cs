@@ -36,16 +36,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ITranslationUtility, TranslationUtility>();
 
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
-builder.Services.AddScoped<IYearlyGoalRepository, YearlyGoalRepository>();
-builder.Services.AddScoped<IMonthlyGoalRepository, MonthlyGoalRepository>();
-builder.Services.AddScoped<IWeeklyGoalRepository, WeeklyGoalRepository>();
-builder.Services.AddScoped<IDailyGoalRepository, DailyGoalRepository>();
+builder.Services.AddScoped<IYearlyPlanRepository, YearlyPlanRepository>();
+builder.Services.AddScoped<IMonthlyPlanRepository, MonthlyPlanRepository>();
+builder.Services.AddScoped<IWeeklyPlanRepository, WeeklyPlanRepository>();
+builder.Services.AddScoped<IDailyPlanRepository, DailyPlanRepository>();
 
 builder.Services.AddScoped<IGoalService, GoalService>();
-builder.Services.AddScoped<IYearlyGoalService, YearlyGoalService>();
-builder.Services.AddScoped<IMonthlyGoalService, MonthlyGoalService>();
-builder.Services.AddScoped<IWeeklyGoalService, WeeklyGoalService>();
-builder.Services.AddScoped<IDailyGoalService, DailyGoalService>();
+builder.Services.AddScoped<IYearlyPlanService, YearlyPlanService>();
+builder.Services.AddScoped<IMonthlyPlanService, MonthlyPlanService>();
+builder.Services.AddScoped<IWeeklyPlanService, WeeklyPlanService>();
+builder.Services.AddScoped<IDailyPlanService, DailyPlanService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 
 builder.Services.AddDbContext<PlannerDbContext>(options =>

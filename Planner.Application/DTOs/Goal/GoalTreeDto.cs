@@ -1,25 +1,25 @@
 namespace Planner.Application.DTOs.Goal;
 
-public record DailyGoalTreeDto(
+public record DailyPlanTreeDto(
     Guid Id, string Title, string Description,
     DateTime CreatedAt, DateTime DueDate, bool IsCompleted);
 
-public record WeeklyGoalTreeDto(
+public record WeeklyPlanTreeDto(
     Guid Id, string Title, string Description,
     DateTime CreatedAt, DateTime DueDate, bool IsCompleted,
-    IEnumerable<DailyGoalTreeDto> DailyGoals);
+    IEnumerable<DailyPlanTreeDto> DailyPlans);
 
-public record MonthlyGoalTreeDto(
+public record MonthlyPlanTreeDto(
     Guid Id, string Title, string Description,
     DateTime CreatedAt, DateTime DueDate, bool IsCompleted,
-    IEnumerable<WeeklyGoalTreeDto> WeeklyGoals);
+    IEnumerable<WeeklyPlanTreeDto> WeeklyPlans);
 
-public record YearlyGoalTreeDto(
+public record YearlyPlanTreeDto(
     Guid Id, string Title, string Description,
     DateTime CreatedAt, DateTime DueDate, bool IsCompleted,
-    IEnumerable<MonthlyGoalTreeDto> MonthlyGoals);
+    IEnumerable<MonthlyPlanTreeDto> MonthlyPlans);
 
 public record GoalTreeDto(
     Guid Id, string Title, string Description,
     DateTime CreatedAt, DateTime DueDate, bool IsCompleted,
-    IEnumerable<YearlyGoalTreeDto> YearlyGoals);
+    IEnumerable<YearlyPlanTreeDto> YearlyPlans);

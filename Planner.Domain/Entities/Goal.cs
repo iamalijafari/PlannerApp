@@ -10,7 +10,7 @@ public class Goal
     public DateTime CreatedAt { get; private set; }
     public DateTime DueDate { get; private set; }
     public bool IsCompleted { get; private set; }
-    public ICollection<YearlyGoal> YearlyGoals { get; private set; } = new List<YearlyGoal>();
+    public ICollection<YearlyPlan> YearlyPlans { get; private set; } = new List<YearlyPlan>();
 
     private Goal() { }
 

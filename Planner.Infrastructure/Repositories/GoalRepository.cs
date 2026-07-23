@@ -51,10 +51,10 @@ public class GoalRepository : IGoalRepository
     public async Task<Domain.Entities.Goal> GetTreeByIdAsync(Guid id)
     {
         return await context.Goals
-            .Include(g => g.YearlyGoals)
-                .ThenInclude(y => y.MonthlyGoals)
-                    .ThenInclude(m => m.WeeklyGoals)
-                        .ThenInclude(w => w.DailyGoals)
+            .Include(g => g.YearlyPlans)
+                .ThenInclude(y => y.MonthlyPlans)
+                    .ThenInclude(m => m.WeeklyPlans)
+                        .ThenInclude(w => w.DailyPlans)
             .FirstOrDefaultAsync(g => g.Id == id);
     }
 }

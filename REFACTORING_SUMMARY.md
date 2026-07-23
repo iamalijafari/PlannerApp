@@ -86,7 +86,7 @@ UI (Next.js Frontend, React Components)
 **Files Modified**:
 
 - `Planner.Api/Controllers/GoalController.cs`
-- `Planner.Api/Controllers/YearlyGoalController.cs`
+- `Planner.Api/Controllers/YearlyPlanController.cs`
 
 #### 2.2 Async/Await Anti-patterns - FIXED ✅
 
@@ -111,7 +111,7 @@ public Task UpdateAsync(Goal goal)
 **Files Modified**:
 
 - `Planner.Infrastructure/Repositories/GoalRepository.cs`
-- `Planner.Infrastructure/Repositories/YearlyGoalRepository.cs`
+- `Planner.Infrastructure/Repositories/YearlyPlanRepository.cs`
 
 #### 2.3 Error Handling & Validation - COMPREHENSIVE ✅
 
@@ -126,7 +126,7 @@ public Task UpdateAsync(Goal goal)
 
 ```csharp
 Goal_NotFound = 36,
-YearlyGoal_NotFound = 37,
+YearlyPlan_NotFound = 37,
 Invalid_Input = 38,
 Operation_Failed = 39
 ```
@@ -134,7 +134,7 @@ Operation_Failed = 39
 **Files Modified**:
 
 - `Planner.Application/Services/GoalService.cs` (added 120 lines of error handling)
-- `Planner.Application/Services/YearlyGoalService.cs` (added 120 lines of error handling)
+- `Planner.Application/Services/YearlyPlanService.cs` (added 120 lines of error handling)
 - `Planner.Application/Enumerations/MessageKey.cs`
 
 **Example**:
@@ -425,18 +425,18 @@ These were blocking issues that are now resolved:
 ```
 Planner.Api/
   ├── Controllers/GoalController.cs (API routes fixed)
-  ├── Controllers/YearlyGoalController.cs (API routes fixed)
+  ├── Controllers/YearlyPlanController.cs (API routes fixed)
   └── appsettings.Docker.json (NEW - Docker config)
   └── appsettings.example.json (NEW - Config template)
 
 Planner.Application/
   ├── Services/GoalService.cs (Error handling added)
-  ├── Services/YearlyGoalService.cs (Error handling added)
+  ├── Services/YearlyPlanService.cs (Error handling added)
   └── Enumerations/MessageKey.cs (New error keys)
 
 Planner.Infrastructure/
   ├── Repositories/GoalRepository.cs (Async fixed)
-  └── Repositories/YearlyGoalRepository.cs (Async fixed)
+  └── Repositories/YearlyPlanRepository.cs (Async fixed)
 ```
 
 ### Frontend (7 files)

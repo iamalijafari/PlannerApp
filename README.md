@@ -17,7 +17,7 @@ A full-stack **Goal Planning & Management System** built with modern technologie
 PlannerApp follows **Clean Architecture** principles with clear separation of concerns:
 
 ```
-Planner.Domain              → Core business entities (Goal, YearlyGoal)
+Planner.Domain              → Core business entities (Goal, YearlyPlan)
     ↓
 Planner.Application         → DTOs, Services, Repositories, Mappers, Utilities
     ↓
@@ -149,7 +149,7 @@ PlannerApp/
 │   └── Utilities/                  # Helper utilities (translation)
 │
 ├── Planner.Domain/                 # Core domain layer
-│   ├── Entities/                   # Goal, YearlyGoal
+│   ├── Entities/                   # Goal, YearlyPlan
 │   └── Enumerations/               # Domain-level enums
 │
 ├── Planner.Infrastructure/         # Data access layer
@@ -193,14 +193,14 @@ All endpoints return a `ResponseModel` with `success`, `messageKey`, and `result
 - `DELETE /api/goal/{id}` - Delete goal
 - `PUT /api/goal/{id}/complete` - Mark goal as completed
 
-### Yearly Goals
+### Yearly Plans
 
-- `GET /api/yearlygoa/by-goal/{goalId}` - Get yearly goals for a goal
-- `GET /api/yearlygoa/{id}` - Get yearly goal by ID
-- `POST /api/yearlygoa` - Create yearly goal
-- `PUT /api/yearlygoa/{id}` - Update yearly goal
-- `DELETE /api/yearlygoa/{id}` - Delete yearly goal
-- `PUT /api/yearlygoa/{id}/complete` - Mark yearly goal as completed
+- `GET /api/yearlygoa/by-goal/{goalId}` - Get yearly plans for a goal
+- `GET /api/yearlygoa/{id}` - Get yearly plan by ID
+- `POST /api/yearlygoa` - Create yearly plan
+- `PUT /api/yearlygoa/{id}` - Update yearly plan
+- `DELETE /api/yearlygoa/{id}` - Delete yearly plan
+- `PUT /api/yearlygoa/{id}/complete` - Mark yearly plan as completed
 
 ### Translations
 
@@ -318,7 +318,7 @@ The project includes:
 | CreatedAt   | DateTime | Creation timestamp     |
 | UpdatedAt   | DateTime | Last update timestamp  |
 
-### YearlyGoals Table
+### YearlyPlans Table
 
 | Column      | Type     | Notes                  |
 | ----------- | -------- | ---------------------- |

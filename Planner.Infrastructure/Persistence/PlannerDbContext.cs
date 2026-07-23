@@ -11,10 +11,10 @@ public class PlannerDbContext : DbContext
     }
 
     public DbSet<Goal> Goals => Set<Goal>();
-    public DbSet<YearlyGoal> YearlyGoals => Set<YearlyGoal>();
-    public DbSet<MonthlyGoal> MonthlyGoals => Set<MonthlyGoal>();
-    public DbSet<WeeklyGoal> WeeklyGoals => Set<WeeklyGoal>();
-    public DbSet<DailyGoal> DailyGoals => Set<DailyGoal>();
+    public DbSet<YearlyPlan> YearlyPlans => Set<YearlyPlan>();
+    public DbSet<MonthlyPlan> MonthlyPlans => Set<MonthlyPlan>();
+    public DbSet<WeeklyPlan> WeeklyPlans => Set<WeeklyPlan>();
+    public DbSet<DailyPlan> DailyPlans => Set<DailyPlan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,35 +27,39 @@ public class PlannerDbContext : DbContext
             entity.Property(g => g.CreatedAt).IsRequired();
             entity.Property(g => g.DueDate).IsRequired();
             entity.Property(g => g.IsCompleted).IsRequired();
-            entity.HasMany(g => g.YearlyGoals).WithOne(sg => sg.Goal).HasForeignKey(sg => sg.GoalId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(g => g.YearlyPlans).WithOne(sg => sg.Goal).HasForeignKey(sg => sg.GoalId).OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<YearlyGoal>(entity =>
+        modelBuilder.Entity<YearlyPlan>(entity =>
         {
+            entity.ToTable("YearlyPlans");
             entity.HasKey(sg => sg.Id);
             entity.Property(sg => sg.Title).IsRequired().HasMaxLength(200);
             entity.Property(sg => sg.CreatedAt).IsRequired();
             entity.Property(sg => sg.DueDate).IsRequired();
             entity.Property(sg => sg.IsCompleted).IsRequired();
-            entity.HasMany(y => y.MonthlyGoals).WithOne(m => m.YearlyGoal).HasForeignKey(m => m.YearlyGoalId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(y => y.MonthlyPlans).WithOne(m => m.YearlyPlan).HasForeignKey(m => m.YearlyPlanId).OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<MonthlyGoal>(entity =>
+        modelBuilder.Entity<MonthlyPlan>(entity =>
         {
+            entity.ToTable("MonthlyPlans");
             entity.HasKey(m => m.Id);
             entity.Property(m => m.Title).IsRequired().HasMaxLength(200);
-            entity.HasMany(m => m.WeeklyGoals).WithOne(w => w.MonthlyGoal).HasForeignKey(w => w.MonthlyGoalId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(m => m.WeeklyPlans).WithOne(w => w.MonthlyPlan).HasForeignKey(w => w.MonthlyPlanId).OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<WeeklyGoal>(entity =>
+        modelBuilder.Entity<WeeklyPlan>(entity =>
         {
+            entity.ToTable("WeeklyPlans");
             entity.HasKey(w => w.Id);
             entity.Property(w => w.Title).IsRequired().HasMaxLength(200);
-            entity.HasMany(w => w.DailyGoals).WithOne(d => d.WeeklyGoal).HasForeignKey(d => d.WeeklyGoalId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(w => w.DailyPlans).WithOne(d => d.WeeklyPlan).HasForeignKey(d => d.WeeklyPlanId).OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<DailyGoal>(entity =>
+        modelBuilder.Entity<DailyPlan>(entity =>
         {
+            entity.ToTable("DailyPlans");
             entity.HasKey(d => d.Id);
             entity.Property(d => d.Title).IsRequired().HasMaxLength(200);
         });

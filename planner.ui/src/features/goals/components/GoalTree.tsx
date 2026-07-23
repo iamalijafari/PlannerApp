@@ -6,13 +6,13 @@ import DatePicker, { todayIso } from "@/components/DatePicker";
 import Modal from "@/components/Modal";
 import { useTranslation } from "@/context/translation-context";
 import { MessageKey } from "@/types/message-key";
-import { yearlyGoalApi } from "../api/goal-level-apis";
+import { yearlyPlanApi } from "../api/plan-level-apis";
 import { getGoalTree } from "../api/goal-tree-api";
 import {
   getTreeItems,
   GoalTreeModel,
 } from "../types/goal-tree-model";
-import GoalTreeNode from "./GoalTreeNode";
+import PlanTreeNode from "./PlanTreeNode";
 
 interface GoalTreeProps {
   goalId: string;
@@ -22,7 +22,7 @@ export default function GoalTree({ goalId }: GoalTreeProps) {
   const { t } = useTranslation();
   const [tree, setTree] = useState<GoalTreeModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAddingYearly, setIsAddingYearly] = useState(false);
+  const [isAddingYearlyPlan, setIsAddingYearlyPlan] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -51,12 +51,12 @@ export default function GoalTree({ goalId }: GoalTreeProps) {
     void loadTree();
   }, [loadTree]);
 
-  const handleAddYearly = async () => {
+  const handleAddYearlyPlan = async () => {
     if (!title.trim() || !dueDate) return;
     setIsSaving(true);
 
     try {
-      const response = await yearlyGoalApi.create({
+      const response = await yearlyPlanApi.create({
         parentId: goalId,
         title: title.trim(),
         description: description.trim(),
@@ -70,10 +70,10 @@ export default function GoalTree({ goalId }: GoalTreeProps) {
       setTitle("");
       setDescription("");
       setDueDate(todayIso());
-      setIsAddingYearly(false);
+      setIsAddingYearlyPlan(false);
       await loadTree();
     } catch (error) {
-      console.error(`Failed to add yearly goal to ${goalId}:`, error);
+      console.error(`Failed to add yearly plan to ${goalId}:`, error);
       setErrorKey(MessageKey.ServerError);
     } finally {
       setIsSaving(false);
@@ -105,12 +105,12 @@ export default function GoalTree({ goalId }: GoalTreeProps) {
           <>
             <button
               className="btn mb-5 text-sm"
-              onClick={() => setIsAddingYearly((current) => !current)}
+              onClick={() => setIsAddingYearlyPlan((current) => !current)}
             >
               {t(MessageKey.Add)} {t(MessageKey.Yearly)}
             </button>
 
-            {isAddingYearly && (
+            {isAddingYearlyPlan && (
               <div className="tree-form mb-6">
                 <label>
                   {t(MessageKey.Title)}
@@ -136,14 +136,14 @@ export default function GoalTree({ goalId }: GoalTreeProps) {
                   <button
                     className="btn text-sm"
                     disabled={isSaving || !title.trim() || !dueDate}
-                    onClick={() => void handleAddYearly()}
+                    onClick={() => void handleAddYearlyPlan()}
                   >
                     {t(MessageKey.Add)}
                   </button>
                   <button
                     className="muted-btn text-sm"
                     disabled={isSaving}
-                    onClick={() => setIsAddingYearly(false)}
+                    onClick={() => setIsAddingYearlyPlan(false)}
                   >
                     {t(MessageKey.Cancel)}
                   </button>
@@ -151,12 +151,12 @@ export default function GoalTree({ goalId }: GoalTreeProps) {
               </div>
             )}
 
-            {tree.yearlyGoals.length === 0 ? (
-              <div className="empty-state">{t(MessageKey.NoYearlyGoals)}</div>
+            {tree.yearlyPlans.length === 0 ? (
+              <div className="empty-state">{t(MessageKey.NoYearlyPlans)}</div>
             ) : (
               <ul className="goal-tree">
                 {getTreeItems(tree).map((item) => (
-                  <GoalTreeNode
+                  <PlanTreeNode
                     key={item.id}
                     node={item}
                     onChanged={loadTree}

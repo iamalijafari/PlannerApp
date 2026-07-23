@@ -22,7 +22,7 @@ namespace Planner.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Planner.Domain.Entities.DailyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.DailyPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,14 +46,14 @@ namespace Planner.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid>("WeeklyGoalId")
+                    b.Property<Guid>("WeeklyPlanId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WeeklyGoalId");
+                    b.HasIndex("WeeklyPlanId");
 
-                    b.ToTable("DailyGoals");
+                    b.ToTable("DailyPlans");
                 });
 
             modelBuilder.Entity("Planner.Domain.Entities.Goal", b =>
@@ -85,7 +85,7 @@ namespace Planner.Infrastructure.Migrations
                     b.ToTable("Goals");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.MonthlyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.MonthlyPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,17 +109,17 @@ namespace Planner.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid>("YearlyGoalId")
+                    b.Property<Guid>("YearlyPlanId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("YearlyGoalId");
+                    b.HasIndex("YearlyPlanId");
 
-                    b.ToTable("MonthlyGoals");
+                    b.ToTable("MonthlyPlans");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.WeeklyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.WeeklyPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +138,7 @@ namespace Planner.Infrastructure.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("MonthlyGoalId")
+                    b.Property<Guid>("MonthlyPlanId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Title")
@@ -148,12 +148,12 @@ namespace Planner.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MonthlyGoalId");
+                    b.HasIndex("MonthlyPlanId");
 
-                    b.ToTable("WeeklyGoals");
+                    b.ToTable("WeeklyPlans");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.YearlyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.YearlyPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,46 +184,46 @@ namespace Planner.Infrastructure.Migrations
 
                     b.HasIndex("GoalId");
 
-                    b.ToTable("YearlyGoals");
+                    b.ToTable("YearlyPlans");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.DailyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.DailyPlan", b =>
                 {
-                    b.HasOne("Planner.Domain.Entities.WeeklyGoal", "WeeklyGoal")
-                        .WithMany("DailyGoals")
-                        .HasForeignKey("WeeklyGoalId")
+                    b.HasOne("Planner.Domain.Entities.WeeklyPlan", "WeeklyPlan")
+                        .WithMany("DailyPlans")
+                        .HasForeignKey("WeeklyPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("WeeklyGoal");
+                    b.Navigation("WeeklyPlan");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.MonthlyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.MonthlyPlan", b =>
                 {
-                    b.HasOne("Planner.Domain.Entities.YearlyGoal", "YearlyGoal")
-                        .WithMany("MonthlyGoals")
-                        .HasForeignKey("YearlyGoalId")
+                    b.HasOne("Planner.Domain.Entities.YearlyPlan", "YearlyPlan")
+                        .WithMany("MonthlyPlans")
+                        .HasForeignKey("YearlyPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("YearlyGoal");
+                    b.Navigation("YearlyPlan");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.WeeklyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.WeeklyPlan", b =>
                 {
-                    b.HasOne("Planner.Domain.Entities.MonthlyGoal", "MonthlyGoal")
-                        .WithMany("WeeklyGoals")
-                        .HasForeignKey("MonthlyGoalId")
+                    b.HasOne("Planner.Domain.Entities.MonthlyPlan", "MonthlyPlan")
+                        .WithMany("WeeklyPlans")
+                        .HasForeignKey("MonthlyPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MonthlyGoal");
+                    b.Navigation("MonthlyPlan");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.YearlyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.YearlyPlan", b =>
                 {
                     b.HasOne("Planner.Domain.Entities.Goal", "Goal")
-                        .WithMany("YearlyGoals")
+                        .WithMany("YearlyPlans")
                         .HasForeignKey("GoalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -233,22 +233,22 @@ namespace Planner.Infrastructure.Migrations
 
             modelBuilder.Entity("Planner.Domain.Entities.Goal", b =>
                 {
-                    b.Navigation("YearlyGoals");
+                    b.Navigation("YearlyPlans");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.MonthlyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.MonthlyPlan", b =>
                 {
-                    b.Navigation("WeeklyGoals");
+                    b.Navigation("WeeklyPlans");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.WeeklyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.WeeklyPlan", b =>
                 {
-                    b.Navigation("DailyGoals");
+                    b.Navigation("DailyPlans");
                 });
 
-            modelBuilder.Entity("Planner.Domain.Entities.YearlyGoal", b =>
+            modelBuilder.Entity("Planner.Domain.Entities.YearlyPlan", b =>
                 {
-                    b.Navigation("MonthlyGoals");
+                    b.Navigation("MonthlyPlans");
                 });
 #pragma warning restore 612, 618
         }

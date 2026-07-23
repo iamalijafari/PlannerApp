@@ -7,59 +7,59 @@ export interface TreeNodeBase {
   isCompleted: boolean;
 }
 
-export type DailyGoalTreeModel = TreeNodeBase;
+export type DailyPlanTreeModel = TreeNodeBase;
 
-export interface WeeklyGoalTreeModel extends TreeNodeBase {
-  dailyGoals: DailyGoalTreeModel[];
+export interface WeeklyPlanTreeModel extends TreeNodeBase {
+  dailyPlans: DailyPlanTreeModel[];
 }
 
-export interface MonthlyGoalTreeModel extends TreeNodeBase {
-  weeklyGoals: WeeklyGoalTreeModel[];
+export interface MonthlyPlanTreeModel extends TreeNodeBase {
+  weeklyPlans: WeeklyPlanTreeModel[];
 }
 
-export interface YearlyGoalTreeModel extends TreeNodeBase {
-  monthlyGoals: MonthlyGoalTreeModel[];
+export interface YearlyPlanTreeModel extends TreeNodeBase {
+  monthlyPlans: MonthlyPlanTreeModel[];
 }
 
 export interface GoalTreeModel extends TreeNodeBase {
-  yearlyGoals: YearlyGoalTreeModel[];
+  yearlyPlans: YearlyPlanTreeModel[];
 }
 
-export type GoalLevel = "yearly" | "monthly" | "weekly" | "daily";
+export type PlanLevel = "yearly" | "monthly" | "weekly" | "daily";
 
-export interface GoalTreeItem extends TreeNodeBase {
-  level: GoalLevel;
-  children: GoalTreeItem[];
+export interface PlanTreeItem extends TreeNodeBase {
+  level: PlanLevel;
+  children: PlanTreeItem[];
 }
 
-function dailyToItem(goal: DailyGoalTreeModel): GoalTreeItem {
-  return { ...goal, level: "daily", children: [] };
+function dailyToItem(plan: DailyPlanTreeModel): PlanTreeItem {
+  return { ...plan, level: "daily", children: [] };
 }
 
-function weeklyToItem(goal: WeeklyGoalTreeModel): GoalTreeItem {
+function weeklyToItem(plan: WeeklyPlanTreeModel): PlanTreeItem {
   return {
-    ...goal,
+    ...plan,
     level: "weekly",
-    children: goal.dailyGoals.map(dailyToItem),
+    children: plan.dailyPlans.map(dailyToItem),
   };
 }
 
-function monthlyToItem(goal: MonthlyGoalTreeModel): GoalTreeItem {
+function monthlyToItem(plan: MonthlyPlanTreeModel): PlanTreeItem {
   return {
-    ...goal,
+    ...plan,
     level: "monthly",
-    children: goal.weeklyGoals.map(weeklyToItem),
+    children: plan.weeklyPlans.map(weeklyToItem),
   };
 }
 
-function yearlyToItem(goal: YearlyGoalTreeModel): GoalTreeItem {
+function yearlyToItem(plan: YearlyPlanTreeModel): PlanTreeItem {
   return {
-    ...goal,
+    ...plan,
     level: "yearly",
-    children: goal.monthlyGoals.map(monthlyToItem),
+    children: plan.monthlyPlans.map(monthlyToItem),
   };
 }
 
-export function getTreeItems(tree: GoalTreeModel): GoalTreeItem[] {
-  return tree.yearlyGoals.map(yearlyToItem);
+export function getTreeItems(tree: GoalTreeModel): PlanTreeItem[] {
+  return tree.yearlyPlans.map(yearlyToItem);
 }
