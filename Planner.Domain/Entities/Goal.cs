@@ -1,3 +1,5 @@
+using Planner.Domain.Utilities;
+
 namespace Planner.Domain.Entities;
 
 public class Goal
@@ -18,7 +20,7 @@ public class Goal
         this.Title = Title;
         this.Description = Description;
         CreatedAt = DateTime.UtcNow;
-        this.DueDate = DueDate.ToUniversalTime();
+        this.DueDate = UtcDateTime.Normalize(DueDate);
         IsCompleted = false;
     }
 
@@ -36,7 +38,7 @@ public class Goal
 
         Title = title;
         Description = description;
-        DueDate = dueDate;
+        DueDate = UtcDateTime.Normalize(dueDate);
         IsCompleted = isCompleted;
     }
 }

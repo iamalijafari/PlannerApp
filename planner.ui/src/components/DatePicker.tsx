@@ -36,8 +36,8 @@ function gregorianToJalali(gy: number, gm: number, gd: number): [number, number,
   j_day_no %= 1461;
 
   if (j_day_no >= 366) {
-    jy += div((j_day_no - 366), 365);
-    j_day_no = (j_day_no - 366) % 365;
+    jy += div(j_day_no - 1, 365);
+    j_day_no = (j_day_no - 1) % 365;
   }
 
   const jm = j_day_no < 186 ? 1 + div(j_day_no, 31) : 7 + div((j_day_no - 186), 30);
@@ -104,6 +104,24 @@ function partsToIso(y: number, m: number, d: number) {
   return `${y}-${mm}-${dd}`;
 }
 
+function jalaliMonthLengths(year: number) {
+  const currentYearStart = jalaliToGregorian(year, 1, 1);
+  const nextYearStart = jalaliToGregorian(year + 1, 1, 1);
+  const currentYearStartUtc = Date.UTC(...toUtcDateArguments(currentYearStart));
+  const nextYearStartUtc = Date.UTC(...toUtcDateArguments(nextYearStart));
+  const isLeapYear =
+    (nextYearStartUtc - currentYearStartUtc) / 86_400_000 === 366;
+
+  return [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapYear ? 30 : 29];
+}
+
+function toUtcDateArguments(
+  parts: [number, number, number],
+): [number, number, number] {
+  const [year, month, day] = parts;
+  return [year, month - 1, day];
+}
+
 export function todayIso() {
   const today = new Date();
   return partsToIso(
@@ -122,8 +140,8 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
     const [gy, gm, gd] = isoToParts(value);
 
     const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 50;
-    const endYear = currentYear + 10;
+    const startYear = Math.min(currentYear - 50, gy);
+    const endYear = Math.max(currentYear + 10, gy);
 
     const isLeap = (y: number) => (y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0));
     const gregorianMonthLengths = (y: number) => [31, isLeap(y) ? 29 : 28, 31,30,31,30,31,31,30,31,30,31];
@@ -192,12 +210,18 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
   const [gy, gm, gd] = isoToParts(value);
   const [jy, jm, jd] = gregorianToJalali(gy, gm, gd);
 
-  const currentYear = new Date().getFullYear();
-  const jalaliYearNow = gregorianToJalali(currentYear, 1, 1)[0];
-  const startYear = jalaliYearNow - 50;
-  const endYear = jalaliYearNow + 10;
-
-  const monthLengths = [31,31,31,31,31,31,30,30,30,30,30,29];
+  const today = new Date();
+  const jalaliYearNow = gregorianToJalali(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    today.getDate(),
+  )[0];
+  const startYear = Math.min(jalaliYearNow - 50, jy);
+  const endYear = Math.max(jalaliYearNow + 10, jy);
+  const monthLengths = jalaliMonthLengths(jy);
+  const numberFormatter = new Intl.NumberFormat("fa-IR", {
+    useGrouping: false,
+  });
 
   return (
     <div className="flex gap-2 items-center mb-3">
@@ -207,14 +231,19 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         value={jy}
         onChange={(e) => {
           const newJy = parseInt(e.target.value, 10);
-          const [ngy, ngm, ngd] = jalaliToGregorian(newJy, jm, Math.min(jd, monthLengths[jm - 1]));
+          const newYearMonthLengths = jalaliMonthLengths(newJy);
+          const [ngy, ngm, ngd] = jalaliToGregorian(
+            newJy,
+            jm,
+            Math.min(jd, newYearMonthLengths[jm - 1]),
+          );
           onChange(partsToIso(ngy, ngm, ngd));
         }}
       >
         {Array.from({ length: endYear - startYear + 1 }).map((_, i) => {
           const y = startYear + i;
           return (
-            <option key={y} value={y}>{y}</option>
+            <option key={y} value={y}>{numberFormatter.format(y)}</option>
           );
         })}
       </select>
@@ -234,7 +263,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         {Array.from({ length: 12 }).map((_, i) => {
           const m = i + 1;
           return (
-            <option key={m} value={m}>{m}</option>
+            <option key={m} value={m}>{numberFormatter.format(m)}</option>
           );
         })}
       </select>
@@ -252,7 +281,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         {Array.from({ length: monthLengths[jm - 1] }).map((_, i) => {
           const d = i + 1;
           return (
-            <option key={d} value={d}>{d}</option>
+            <option key={d} value={d}>{numberFormatter.format(d)}</option>
           );
         })}
       </select>
