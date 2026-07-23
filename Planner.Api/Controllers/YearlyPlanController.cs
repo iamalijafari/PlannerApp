@@ -8,6 +8,9 @@ using Planner.Api.DTOs.Requests.YearlyPlan;
 
 namespace Planner.Api.Controllers;
 
+/// <summary>
+/// Manages yearly plans that belong to a goal.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class YearlyPlanController : ControllerBase
@@ -19,6 +22,7 @@ public class YearlyPlanController : ControllerBase
         this.yearlyPlanService = yearlyPlanService;
     }
 
+    /// <summary>Returns a goal's yearly plans ordered by due date.</summary>
     [HttpGet("by-goal/{goalId}")]
     public async Task<IActionResult> GetAllByGoalId(Guid goalId)
     {
@@ -26,6 +30,7 @@ public class YearlyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Returns one yearly plan by its identifier.</summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
@@ -33,6 +38,7 @@ public class YearlyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Creates a yearly plan.</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateYearlyPlanRequestModel dto)
     {
@@ -40,6 +46,7 @@ public class YearlyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Updates a yearly plan.</summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateYearlyPlanDto dto)
     {
@@ -48,6 +55,7 @@ public class YearlyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Deletes a yearly plan.</summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -55,6 +63,7 @@ public class YearlyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Marks a yearly plan as completed.</summary>
     [HttpPut("{id}/complete")]
     public async Task<IActionResult> Complete(Guid id)
     {

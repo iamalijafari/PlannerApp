@@ -10,11 +10,13 @@ public class TranslationUtility : ITranslationUtility
 
     public TranslationUtility()
     {
-        foreach(int i in Enum.GetValues(typeof(Language)))
+        foreach (Language language in Enum.GetValues<Language>())
         {
-            String lang = Enum.GetName(typeof(Language), i);
-
-            string filePath = Path.Combine(Path.Combine(AppContext.BaseDirectory, "Dictionaries"), $"Messages.{lang}.xml");
+            string languageName = language.ToString();
+            string filePath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Dictionaries",
+                $"Messages.{languageName}.xml");
 
             if (!File.Exists(filePath))
             {
@@ -29,19 +31,19 @@ public class TranslationUtility : ITranslationUtility
                     m => m.Value
                 );
 
-            languages[lang] = dict;
+            languages[languageName] = dict;
         }
     }
 
-    public async Task<string> Translate(MessageKey key, Language lang)
+    public Task<string> Translate(MessageKey key, Language lang)
     {
         string stringKey = key.ToString();
 
         if (languages[lang.ToString()].TryGetValue(stringKey, out string? value))
         {
-            return value;
+            return Task.FromResult(value);
         }
 
-        return $"{stringKey}";
+        return Task.FromResult(stringKey);
     }
 }

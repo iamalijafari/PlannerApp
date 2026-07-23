@@ -7,6 +7,7 @@ using Planner.Infrastructure.Repositories;
 using Planner.Application.Utilities;
 using Planner.Api.Middlewares;
 using Planner.Application.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    string xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+});
 
 builder.Services.AddSingleton<ITranslationUtility, TranslationUtility>();
 
@@ -61,7 +66,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("AllowUI");
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();

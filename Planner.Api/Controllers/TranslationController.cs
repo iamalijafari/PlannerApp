@@ -4,6 +4,9 @@ using Planner.Api.DTOs.Requests.Translation;
 
 namespace Planner.Api.Controllers;
 
+/// <summary>
+/// Resolves localized UI messages in English or Persian.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class TranslationController : ControllerBase
@@ -15,6 +18,7 @@ public class TranslationController : ControllerBase
         this.translationService = translationService;    
     }
 
+    /// <summary>Translates one message key into the requested language.</summary>
     [HttpPost("Translate")]
     public async Task<IActionResult> Translate([FromBody] TranslationRequestModel model)
     {

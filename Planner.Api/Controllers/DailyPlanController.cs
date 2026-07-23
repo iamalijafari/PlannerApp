@@ -8,6 +8,9 @@ using Planner.Api.DTOs.Requests.DailyPlan;
 
 namespace Planner.Api.Controllers;
 
+/// <summary>
+/// Manages daily plans that belong to a weekly plan.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class DailyPlanController : ControllerBase
@@ -19,6 +22,7 @@ public class DailyPlanController : ControllerBase
         this.dailyPlanService = dailyPlanService;
     }
 
+    /// <summary>Returns a weekly plan's daily plans ordered by due date.</summary>
     [HttpGet("by-weekly-plan/{weeklyPlanId}")]
     public async Task<IActionResult> GetAllByWeeklyPlanId(Guid weeklyPlanId)
     {
@@ -26,6 +30,7 @@ public class DailyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Returns one daily plan by its identifier.</summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
@@ -33,6 +38,7 @@ public class DailyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Creates a daily plan.</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDailyPlanRequestModel dto)
     {
@@ -40,6 +46,7 @@ public class DailyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Updates a daily plan.</summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDailyPlanDto dto)
     {
@@ -48,6 +55,7 @@ public class DailyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Deletes a daily plan.</summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -55,6 +63,7 @@ public class DailyPlanController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Marks a daily plan as completed.</summary>
     [HttpPut("{id}/complete")]
     public async Task<IActionResult> Complete(Guid id)
     {

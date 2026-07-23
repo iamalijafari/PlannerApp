@@ -8,7 +8,7 @@ export interface UpdateGoalRequestModel extends CreateGoalRequestModel {
 }
 
 export function getGoals(): Promise<ResponseModel<GoalResponseModel[]>> {
-  return apiRequest<GoalResponseModel[]>("/goal/GetAll");
+  return apiRequest<GoalResponseModel[]>("/goal");
 }
 
 export function getGoal(

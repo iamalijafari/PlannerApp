@@ -6,9 +6,9 @@ public class DailyPlan
 {
     public Guid Id { get; private set; }
     public Guid WeeklyPlanId { get; set; }
-    public WeeklyPlan WeeklyPlan { get; private set; }
-    public string Title { get; private set; }
-    public string Description { get; private set; }
+    public WeeklyPlan WeeklyPlan { get; private set; } = null!;
+    public string Title { get; private set; } = null!;
+    public string Description { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public DateTime DueDate { get; private set; }
     public bool IsCompleted { get; private set; }

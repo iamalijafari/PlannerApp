@@ -1,351 +1,209 @@
+<div align="center">
+
 # PlannerApp
 
-A full-stack **Goal Planning & Management System** built with modern technologies. Create, track, and manage your goals with yearly sub-goals. Multi-language support (English & Persian/Farsi).
+**Turn long-term goals into yearly, monthly, weekly, and daily action.**
 
-## 🎯 Project Overview
+[![CI](https://github.com/iamalijafari/PlannerApp/actions/workflows/ci.yml/badge.svg?branch=code-review-refactor-docker-setup)](https://github.com/iamalijafari/PlannerApp/actions/workflows/ci.yml)
+[![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-2EA44F.svg)](LICENSE)
 
-**PlannerApp** is a comprehensive goal planning application that helps users:
+<img src="assets/readme-hero.png" alt="PlannerApp goal hierarchy product illustration" width="100%" />
 
-- ✅ Create and manage personal/professional goals
-- ✅ Break down goals into yearly sub-goals
-- ✅ Track progress and mark goals as completed
-- ✅ Manage goals with title, description, and due dates
-- ✅ Support multi-language translations (EN, FA)
+</div>
 
-## 🏗️ Architecture
+PlannerApp is an open-source, bilingual planning platform built to demonstrate production-minded full-stack engineering. A top-level goal becomes an ordered hierarchy of yearly, monthly, weekly, and daily plans, while English/Persian localization and Gregorian/Jalali date handling keep the experience accessible in both left-to-right and right-to-left layouts.
 
-PlannerApp follows **Clean Architecture** principles with clear separation of concerns:
+## Why this project stands out
 
+| Area | Implementation |
+| --- | --- |
+| Backend | ASP.NET Core 9 REST API organized with Clean Architecture, dependency injection, repositories, and services |
+| Frontend | Next.js 16 App Router, React 19, TypeScript, responsive UI, and centralized API access |
+| Data | PostgreSQL 16, Entity Framework Core migrations, UTC date normalization, and deterministic due-date ordering |
+| Localization | English and Persian dictionaries, RTL presentation, and Gregorian/Jalali date selection |
+| Quality | xUnit unit tests, NSubstitute test doubles, coverage collection, linting, type-checking, and production builds |
+| Delivery | Multi-stage Dockerfiles, Docker Compose orchestration, health checks, and GitHub Actions CI |
+
+## Features
+
+- Create, edit, complete, and delete goals.
+- Break each goal into yearly → monthly → weekly → daily plans.
+- Explore and manage the entire plan hierarchy from a tree view.
+- Order every returned list and nested tree level by due date.
+- Switch between English and Persian with RTL-aware presentation.
+- Select dates using Gregorian or Jalali calendar values.
+- Normalize dates to UTC before PostgreSQL persistence.
+- Inspect and exercise the REST API through Swagger UI.
+
+## Architecture
+
+```mermaid
+flowchart TB
+    UI["Next.js UI"] --> API["ASP.NET Core API"]
+    API --> APP["Application services"]
+    APP --> DOMAIN["Domain entities"]
+    API --> INFRA["EF Core infrastructure"]
+    INFRA --> APP
+    INFRA --> DB[("PostgreSQL")]
 ```
-Planner.Domain              → Core business entities (Goal, YearlyPlan)
-    ↓
-Planner.Application         → DTOs, Services, Repositories, Mappers, Utilities
-    ↓
-Planner.Infrastructure      → Database context, migrations, repository implementations
-    ↓
-Planner.Api                 → REST API controllers, middleware, API DTOs
-    ↓
-planner.ui                  → Next.js frontend, React components, API integration
-```
 
-### Backend Design Pattern
+Dependencies point toward the domain and application abstractions. The API composes the application, infrastructure, middleware, and transport models; infrastructure implements repository contracts owned by the application layer.
 
-- **Repository Pattern**: Data access abstraction
-- **Service Layer**: Business logic separation
-- **Dependency Injection**: Loose coupling
-- **Global Exception Middleware**: Centralized error handling
+## Technology stack
 
-### Frontend Design Pattern
+- **API:** .NET 9, ASP.NET Core, Swashbuckle
+- **Application:** C#, service layer, DTOs, mapping extensions
+- **Persistence:** Entity Framework Core 9, Npgsql, PostgreSQL 16
+- **UI:** Next.js 16, React 19, TypeScript, Tailwind CSS 4
+- **Tests:** xUnit, NSubstitute, coverlet
+- **Delivery:** Docker, Docker Compose, GitHub Actions
 
-- **React Hooks**: State management with hooks
-- **App Router**: Next.js 16 App Router (modern navigation)
-- **Feature-based Structure**: Organized by features
-- **API Integration**: Centralized API calls with error handling
-
-## 🛠️ Technology Stack
-
-### Backend
-
-- **Runtime**: .NET 9.0
-- **Framework**: ASP.NET Core 9.0
-- **ORM**: Entity Framework Core 9.0
-- **Database**: PostgreSQL
-- **API Documentation**: Swagger/Swashbuckle 10.0.1
-- **Language**: C# with nullable reference types
-
-### Frontend
-
-- **Framework**: Next.js 16.0.7
-- **UI Library**: React 19.2.0
-- **Language**: TypeScript 5.x
-- **Styling**: Tailwind CSS 4.x with PostCSS
-- **Code Quality**: ESLint, Prettier
-- **CSS**: LightningCSS for optimized builds
-
-### Database
-
-- **Engine**: PostgreSQL 16
-- **Docker Support**: Yes
-
-## 🚀 Quick Start
+## Run with Docker
 
 ### Prerequisites
 
-- Docker & Docker Compose (for containerized setup)
-- .NET 9.0 SDK (for local development)
-- Node.js 22+ (for frontend development)
-- PostgreSQL 16 (for local development)
-
-### Option 1: Docker Compose (Recommended)
+- Docker Engine with Docker Compose v2
+- Ports `3000`, `5010`, and `5432` available
 
 ```bash
-# Clone the repository
-git clone <repository-url>
+git clone https://github.com/iamalijafari/PlannerApp.git
 cd PlannerApp
-
-# Start all services (API, UI, PostgreSQL)
-docker-compose up -d
-
-# The application will be available at:
-# - Frontend: http://localhost:3000
-# - API: http://localhost:5010/api
-# - Swagger Docs: http://localhost:5010/swagger
+git switch code-review-refactor-docker-setup
+docker compose up -d --build
 ```
 
-### Option 2: Local Development
+Once the containers are healthy:
 
-#### Backend Setup
+| Service | URL |
+| --- | --- |
+| Web application | http://localhost:3000 |
+| API | http://localhost:5010/api |
+| Swagger UI | http://localhost:5010/swagger |
+| Health check | http://localhost:5010/health |
+
+Stop the stack with:
 
 ```bash
-cd Planner.Api
-
-# Restore dependencies
-dotnet restore
-
-# Update database (migrations)
-dotnet ef database update --project ../Planner.Infrastructure
-
-# Run the API
-dotnet run
-
-# API will be available at http://localhost:5010/api
+docker compose down
 ```
 
-#### Frontend Setup
+Add `--volumes` only when you intentionally want to remove the local PostgreSQL data volume.
+
+## Run locally
+
+### Prerequisites
+
+- .NET 9 SDK
+- Node.js 22+
+- PostgreSQL 16
+
+### API
+
+Set `ConnectionStrings:DefaultConnection` in `Planner.Api/appsettings.json`, then run:
+
+```bash
+dotnet restore PlannerApp.sln
+dotnet ef database update \
+  --project Planner.Infrastructure \
+  --startup-project Planner.Api
+dotnet run --project Planner.Api
+```
+
+### UI
 
 ```bash
 cd planner.ui
-
-# Copy environment file
 cp .env.example .env.local
-
-# Install dependencies
-npm install
-
-# Run development server
+npm ci
 npm run dev
-
-# Frontend will be available at http://localhost:3000
 ```
 
-## 📁 Project Structure
+The UI reads `NEXT_PUBLIC_API_URL`; its local default is `http://localhost:5010/api`.
 
-```
-PlannerApp/
-├── Planner.Api/                    # REST API layer
-│   ├── Controllers/                # API endpoints
-│   ├── DTOs/                       # Request/Response models
-│   ├── Middlewares/                # Custom middleware (error handling)
-│   ├── Mappers/                    # DTO mapping logic
-│   ├── Program.cs                  # Dependency injection & configuration
-│   └── appsettings.json            # Configuration
-│
-├── Planner.Application/            # Business logic layer
-│   ├── DTOs/                       # Domain models for services
-│   ├── Services/                   # Business logic implementation
-│   ├── Interfaces/                 # Service & repository contracts
-│   ├── Mappers/                    # Domain to DTO mapping
-│   ├── Enumerations/               # Message keys, enums
-│   └── Utilities/                  # Helper utilities (translation)
-│
-├── Planner.Domain/                 # Core domain layer
-│   ├── Entities/                   # Goal, YearlyPlan
-│   └── Enumerations/               # Domain-level enums
-│
-├── Planner.Infrastructure/         # Data access layer
-│   ├── Persistence/                # DbContext
-│   ├── Repositories/               # Data access implementations
-│   └── Migrations/                 # Database migrations
-│
-├── planner.ui/                     # Next.js frontend
-│   ├── src/
-│   │   ├── app/                    # App Router pages
-│   │   ├── features/               # Feature modules
-│   │   │   └── goals/
-│   │   │       ├── api/            # API integration
-│   │   │       ├── components/     # React components
-│   │   │       ├── types/          # TypeScript types
-│   │   │       └── hooks/          # Custom hooks
-│   │   ├── types/                  # Global types
-│   │   └── context/                # React context
-│   ├── public/                     # Static assets
-│   ├── .env.example                # Environment template
-│   ├── next.config.ts              # Next.js configuration
-│   ├── tailwind.config.cjs         # Tailwind CSS configuration
-│   └── package.json                # Dependencies
-│
-├── docker-compose.yml              # Container orchestration
-├── Dockerfile.api                  # Backend Docker image
-├── Dockerfile.ui                   # Frontend Docker image
-└── README.md                       # This file
-```
+## Tests and quality checks
 
-## 📝 API Endpoints
-
-All endpoints return a `ResponseModel` with `success`, `messageKey`, and `result` fields.
-
-### Goals
-
-- `GET /api/goal` - Get all goals
-- `GET /api/goal/{id}` - Get goal by ID
-- `POST /api/goal` - Create new goal
-- `PUT /api/goal/{id}` - Update goal
-- `DELETE /api/goal/{id}` - Delete goal
-- `PUT /api/goal/{id}/complete` - Mark goal as completed
-
-### Yearly Plans
-
-- `GET /api/yearlygoa/by-goal/{goalId}` - Get yearly plans for a goal
-- `GET /api/yearlygoa/{id}` - Get yearly plan by ID
-- `POST /api/yearlygoa` - Create yearly plan
-- `PUT /api/yearlygoa/{id}` - Update yearly plan
-- `DELETE /api/yearlygoa/{id}` - Delete yearly plan
-- `PUT /api/yearlygoa/{id}/complete` - Mark yearly plan as completed
-
-### Translations
-
-- `GET /api/translation` - Get translations for specified language
-
-## 🔧 Development
-
-### Backend Development
+Run the backend test suite with coverage:
 
 ```bash
-cd Planner.Api
-
-# Watch mode
-dotnet watch run
-
-# Run tests (when available)
-dotnet test
-
-# Code analysis
-dotnet build /p:EnforceCodeStyleInBuild=true
+dotnet test Planner.UnitTests/Planner.UnitTests.csproj \
+  --collect:"XPlat Code Coverage"
 ```
 
-### Frontend Development
+The tests exercise:
+
+- UTC normalization and domain validation
+- service validation and repository interactions
+- successful completion behavior
+- failure-to-result error handling
+- due-date ordering at every hierarchy level
+
+Run the frontend checks:
 
 ```bash
 cd planner.ui
-
-# Development server with hot reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production build
-npm start
-
-# Linting
+npm ci
 npm run lint
-
-# Format code
-npx prettier --write .
+npm run typecheck
+npm run build
 ```
 
-## 🐳 Docker Commands
+The [CI workflow](.github/workflows/ci.yml) runs backend restore/build/tests with coverage, frontend lint/type-check/build, and Docker Compose image builds for pushes and pull requests.
 
-```bash
-# Build images
-docker-compose build
+## API documentation
 
-# Start all services in background
-docker-compose up -d
+See [docs/API.md](docs/API.md) for the endpoint catalog, request shapes, response envelope, date conventions, and Swagger instructions.
 
-# View logs
-docker-compose logs -f
+The primary resource hierarchy is:
 
-# Stop services
-docker-compose down
-
-# Remove all containers and volumes
-docker-compose down -v
-
-# Rebuild API only
-docker-compose build api
-
-# Rebuild UI only
-docker-compose build ui
+```text
+Goal
+└── YearlyPlan
+    └── MonthlyPlan
+        └── WeeklyPlan
+            └── DailyPlan
 ```
 
-## 🔐 Environment Variables
+## Repository structure
 
-### Backend (.env or docker-compose)
+```text
+PlannerApp/
+├── Planner.Domain/          # Entities and domain invariants
+├── Planner.Application/     # Use cases, DTOs, contracts, and mappings
+├── Planner.Infrastructure/  # EF Core, repositories, and migrations
+├── Planner.Api/             # Controllers, transport models, and middleware
+├── Planner.UnitTests/       # Domain and application unit tests
+├── planner.ui/              # Next.js application
+├── docs/                    # Focused technical documentation
+├── assets/                  # README and social media artwork
+├── .github/workflows/       # Automated build and test pipeline
+├── Dockerfile.api
+├── Dockerfile.ui
+└── docker-compose.yml
+```
 
-- `ASPNETCORE_ENVIRONMENT`: `Development`, `Docker`, or `Production`
-- `ASPNETCORE_URLS`: Server URL (e.g., `http://+:5010`)
-- `ConnectionStrings__DefaultConnection`: PostgreSQL connection string
+## Project documentation
 
-### Frontend (.env.local)
+- [API reference](docs/API.md)
+- [Engineering and refactoring notes](REFACTORING_SUMMARY.md)
+- [Documentation index](DOCUMENTATION_INDEX.md)
+- [MIT license](LICENSE)
 
-- `NEXT_PUBLIC_API_URL`: Backend API URL (e.g., `http://localhost:5010/api`)
-- `NODE_ENV`: `development` or `production`
+## Portfolio assets
 
-## 📚 Code Quality
+- [`assets/github-social-preview.png`](assets/github-social-preview.png) — 1280 × 640
+- [`assets/readme-hero.png`](assets/readme-hero.png) — 1600 × 900
+- [`assets/linkedin-post.png`](assets/linkedin-post.png) — 1200 × 627
 
-The project includes:
+GitHub social previews are configured in the repository's **Settings → General → Social preview** panel using the prepared social-preview image.
 
-- ✅ **Null Safety**: C# nullable reference types enabled
-- ✅ **Error Handling**: Global exception middleware + try-catch blocks
-- ✅ **Input Validation**: DTO validation and null checks
-- ✅ **Type Safety**: TypeScript for frontend
-- ✅ **Linting**: ESLint for frontend, StyleCop for backend (recommended)
-- ✅ **Code Formatting**: Prettier for frontend
+## Scope and next steps
 
-## 🔄 Recent Improvements
+PlannerApp is a portfolio project and currently assumes a trusted single-user environment. Authentication/authorization, observability, rate limiting, and integration/end-to-end tests are natural next steps before a public production deployment.
 
-✅ Fixed REST API endpoints (GET/POST/PUT/DELETE)  
-✅ Removed async/await anti-patterns in repositories  
-✅ Added comprehensive error handling and validation  
-✅ Added environment variable configuration  
-✅ Created Docker support (Dockerfiles + docker-compose)  
-✅ Removed legacy Pages Router (Next.js App Router only)  
-✅ Cleaned up junk files and unused code  
-✅ Improved API error responses
+## License
 
-## 📖 Database Schema
-
-### Goals Table
-
-| Column      | Type     | Notes                  |
-| ----------- | -------- | ---------------------- |
-| Id          | UUID     | Primary Key            |
-| Title       | String   | Goal title             |
-| Description | String   | Goal description       |
-| DueDate     | DateTime | Target completion date |
-| IsCompleted | Boolean  | Completion status      |
-| CreatedAt   | DateTime | Creation timestamp     |
-| UpdatedAt   | DateTime | Last update timestamp  |
-
-### YearlyPlans Table
-
-| Column      | Type     | Notes                  |
-| ----------- | -------- | ---------------------- |
-| Id          | UUID     | Primary Key            |
-| GoalId      | UUID     | Foreign Key to Goals   |
-| Title       | String   | Sub-goal title         |
-| Description | String   | Sub-goal description   |
-| DueDate     | DateTime | Target completion date |
-| IsCompleted | Boolean  | Completion status      |
-| CreatedAt   | DateTime | Creation timestamp     |
-| UpdatedAt   | DateTime | Last update timestamp  |
-
-## 🤝 Contributing
-
-1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Commit changes (`git commit -m 'Add amazing feature'`)
-3. Push to branch (`git push origin feature/amazing-feature`)
-4. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 📞 Support
-
-For issues, questions, or suggestions, please create an issue in the repository.
-
----
-
-**Happy Planning! 🎯**
+PlannerApp is available under the [MIT License](LICENSE).

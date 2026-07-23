@@ -8,6 +8,9 @@ using Planner.Api.DTOs.Requests.Goal;
 
 namespace Planner.Api.Controllers;
 
+/// <summary>
+/// Manages top-level goals and their complete planning hierarchy.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class GoalController : ControllerBase
@@ -19,13 +22,15 @@ public class GoalController : ControllerBase
         this.goalService = goalService;
     }
 
-    [HttpGet("GetAll")]
+    /// <summary>Returns every goal ordered by due date.</summary>
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         ServiceResult<IEnumerable<GoalDto>> result = await goalService.GetAllAsync();
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Returns one goal by its identifier.</summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
@@ -33,6 +38,7 @@ public class GoalController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Creates a top-level goal.</summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGoalRequestModel dto)
     {
@@ -40,6 +46,7 @@ public class GoalController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Updates a top-level goal.</summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateGoalDto dto)
     {
@@ -48,6 +55,7 @@ public class GoalController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Deletes a top-level goal.</summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -55,6 +63,7 @@ public class GoalController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Marks a top-level goal as completed.</summary>
     [HttpPut("{id}/complete")]
     public async Task<IActionResult> Complete(Guid id)
     {
@@ -62,6 +71,7 @@ public class GoalController : ControllerBase
         return Ok(result.ToResponseModel());
     }
 
+    /// <summary>Returns the complete goal hierarchy ordered by due date at every level.</summary>
     [HttpGet("{id}/tree")]
     public async Task<IActionResult> GetTree(Guid id)
     {
