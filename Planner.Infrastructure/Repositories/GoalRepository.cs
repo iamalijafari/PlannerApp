@@ -20,7 +20,9 @@ public class GoalRepository : IGoalRepository
 
     public async Task<IEnumerable<Domain.Entities.Goal>> GetAllAsync()
     {
-        return await context.Goals.ToListAsync();
+        return await context.Goals
+            .OrderBy(goal => goal.DueDate)
+            .ToListAsync();
     }
 
     public async Task AddAsync(Domain.Entities.Goal goal)

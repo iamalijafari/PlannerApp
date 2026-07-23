@@ -20,7 +20,10 @@ public class MonthlyPlanRepository : IMonthlyPlanRepository
 
     public async Task<IEnumerable<Domain.Entities.MonthlyPlan>> GetAllByYearlyPlanIdAsync(Guid yearlyPlanId)
     {
-        return await context.MonthlyPlans.Where(monthlyPlan => monthlyPlan.YearlyPlanId == yearlyPlanId).ToListAsync();
+        return await context.MonthlyPlans
+            .Where(monthlyPlan => monthlyPlan.YearlyPlanId == yearlyPlanId)
+            .OrderBy(monthlyPlan => monthlyPlan.DueDate)
+            .ToListAsync();
     }
 
     public async Task AddAsync(Domain.Entities.MonthlyPlan monthlyPlan)
