@@ -52,6 +52,8 @@ builder.Services.AddScoped<IMonthlyPlanService, MonthlyPlanService>();
 builder.Services.AddScoped<IWeeklyPlanService, WeeklyPlanService>();
 builder.Services.AddScoped<IDailyPlanService, DailyPlanService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddDbContext<PlannerDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

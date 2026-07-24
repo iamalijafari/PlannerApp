@@ -59,4 +59,17 @@ public class GoalRepository : IGoalRepository
                         .ThenInclude(w => w.DailyPlans)
             .FirstOrDefaultAsync(g => g.Id == id);
     }
+
+    public async Task<IEnumerable<Domain.Entities.Goal>> GetAllWithPlansAsync()
+    {
+        return await context.Goals
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(g => g.YearlyPlans)
+                .ThenInclude(y => y.MonthlyPlans)
+                    .ThenInclude(m => m.WeeklyPlans)
+                        .ThenInclude(w => w.DailyPlans)
+            .OrderBy(goal => goal.DueDate)
+            .ToListAsync();
+    }
 }

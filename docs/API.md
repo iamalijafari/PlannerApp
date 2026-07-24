@@ -135,6 +135,58 @@ Plan create bodies otherwise share this shape:
 
 Plan update bodies use `title`, `description`, `dueDate`, and `isCompleted`; the route supplies the plan identifier.
 
+## Progress report
+
+| Method | Route | Description |
+| --- | --- | --- |
+| `GET` | `/api/report/goals-progress` | Return dashboard summaries and progress for every goal |
+
+Progress is calculated from leaf plans only:
+
+```text
+completed leaf plans / total leaf plans × 100
+```
+
+A leaf is the deepest plan in its branch. Daily plans are leaves, as are weekly,
+monthly, or yearly plans that have no children. This prevents a completed
+parent and its completed children from being counted twice.
+
+Example result:
+
+```json
+{
+  "success": true,
+  "result": {
+    "totalGoals": 4,
+    "activeGoals": 2,
+    "completedGoals": 1,
+    "overdueGoals": 1,
+    "completedLeafPlans": 7,
+    "totalLeafPlans": 10,
+    "overallProgressPercentage": 70,
+    "goals": [
+      {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "title": "Relocate to Ireland",
+        "description": "Prepare the professional and practical move.",
+        "dueDate": "2027-06-01T00:00:00Z",
+        "isCompleted": false,
+        "completedLeafPlans": 7,
+        "totalLeafPlans": 10,
+        "progressPercentage": 70,
+        "status": "in-progress"
+      }
+    ]
+  },
+  "messageKey": 0
+}
+```
+
+Goal status is one of `planned`, `in-progress`, `completed`, or `overdue`.
+Manually completed goals and goals whose leaf plans are all complete receive
+`completed` status. An incomplete goal past its due date receives `overdue`
+status.
+
 ## Translations
 
 | Method | Route | Description |
