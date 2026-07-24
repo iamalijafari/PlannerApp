@@ -30,6 +30,9 @@ PlannerApp is an open-source, bilingual planning platform built to demonstrate p
 
 ## Features
 
+- Open a visual dashboard with total, active, completed, and overdue goal summaries.
+- Track goal and overall progress from completed leaf plans without double-counting parent plans.
+- Search and filter the complete goal report, then jump directly to editing or plan management.
 - Create, edit, complete, and delete goals.
 - Break each goal into yearly → monthly → weekly → daily plans.
 - Explore and manage the entire plan hierarchy from a tree view.
@@ -166,6 +169,18 @@ Goal
         └── WeeklyPlan
             └── DailyPlan
 ```
+
+Progress reporting treats the deepest plan in every branch as a leaf. A daily
+plan is normally a leaf, while a weekly, monthly, or yearly plan is also a leaf
+when it has no children:
+
+```text
+Progress = completed leaf plans / total leaf plans × 100
+```
+
+The dashboard consumes the dedicated `GET /api/report/goals-progress` endpoint,
+so the API remains the single source of truth for hierarchy aggregation and
+goal status.
 
 ## Repository structure
 

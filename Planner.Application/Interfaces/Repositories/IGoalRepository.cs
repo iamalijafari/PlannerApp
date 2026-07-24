@@ -11,4 +11,5 @@ public interface IGoalRepository
     Task DeleteAsync(Guid id);
     Task SaveChangesAsync();
     Task<Goal> GetTreeByIdAsync(Guid id);
+    Task<IEnumerable<Goal>> GetAllWithPlansAsync();
 }
