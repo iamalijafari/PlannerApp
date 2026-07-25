@@ -11,6 +11,12 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowUI", policy =>
@@ -25,7 +31,14 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            policy.WithOrigins("http://localhost:3000");
+            var allowedOrigins = builder.Configuration
+                .GetSection("Cors:AllowedOrigins")
+                .Get<string[]>();
+
+            if (allowedOrigins is { Length: > 0 })
+            {
+                policy.WithOrigins(allowedOrigins);
+            }
         }
     });
 });
