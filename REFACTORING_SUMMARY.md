@@ -1,6 +1,6 @@
 # PlannerApp engineering and refactoring notes
 
-**Updated:** 24 July 2026
+**Updated:** 26 July 2026
 
 **Branch:** `main`
 
@@ -28,7 +28,7 @@ Domain entities normalize created and updated due dates to UTC before persistenc
 
 ### UI consolidation
 
-The abandoned Pages Router implementation and duplicate UI modules were removed. The maintained UI lives under `planner.ui/src`, with centralized configuration and API calls. The edit and tree routes are part of the production App Router build:
+The abandoned Pages Router implementation and duplicate UI modules were removed. The maintained UI lives under `planner.ui/src`, with centralized configuration and API calls. English is the initial language and left-to-right layout; users can switch to Persian and its right-to-left layout. The edit and tree routes are part of the production App Router build:
 
 - `/goals/[id]/edit`
 - `/goals/[id]/tree`
@@ -36,6 +36,12 @@ The abandoned Pages Router implementation and duplicate UI modules were removed.
 ### Container packaging
 
 The Docker build uses multi-stage API and UI images. Docker Compose starts PostgreSQL, waits for its health check, and then starts the API and UI. The API image restores only the deployable project graph; test-only dependencies remain in CI.
+
+### Production deployment
+
+The public demo runs at https://plannerapp-web.onrender.com/. Render hosts the Next.js frontend and ASP.NET Core API, while Neon provides managed PostgreSQL. Both containers honor Render's injected `PORT`; production CORS is restricted to the configured frontend origin, and database credentials remain in Render environment variables. EF Core applies pending migrations when the API starts.
+
+The deployment remains a single-user portfolio demonstration. It has no authentication or per-user data isolation, so it must contain demonstration data only.
 
 ### Automated quality
 
@@ -54,6 +60,8 @@ The Docker build uses multi-stage API and UI images. Docker Compose starts Postg
 - Enabled Swagger in both Development and Docker environments.
 - Added accurate README, GitHub social-preview, and LinkedIn artwork under `assets/`.
 - Linked the [MIT License](LICENSE) directly from the README and badge row.
+- Added the public demo URL and a Render/Neon deployment guide.
+- Replaced pre-deployment limitation wording with accurate public-demo security guidance.
 
 ## Validation
 
@@ -70,11 +78,11 @@ The local authoring environment did not include the .NET SDK or Docker CLI, so t
 
 ## Deliberate limitations
 
-This repository is suitable as a full-stack engineering portfolio project, not yet as an internet-facing multi-user service. Before production use, prioritize:
+This repository is publicly accessible as a full-stack engineering portfolio demonstration, but it is not an internet-facing multi-user product. Visitors should use demonstration data only and never enter sensitive information. Before production use, prioritize:
 
 - authentication and per-user authorization
 - secrets management and production CORS configuration
 - structured observability and distributed tracing
 - API status-code and validation refinements
 - integration and browser-level end-to-end tests
-- deployment infrastructure and database backup policy
+- infrastructure as code, automated deployment verification, and database backup policy

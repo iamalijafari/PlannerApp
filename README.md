@@ -11,6 +11,8 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2EA44F.svg)](LICENSE)
 
+[**Live Demo**](https://plannerapp-web.onrender.com/) · [Deployment Guide](docs/DEPLOYMENT.md)
+
 <img src="assets/readme-hero.png" alt="PlannerApp goal hierarchy product illustration" width="100%" />
 
 </div>
@@ -24,9 +26,9 @@ PlannerApp is an open-source, bilingual planning platform built to demonstrate p
 | Backend      | ASP.NET Core 9 REST API organized with Clean Architecture, dependency injection, repositories, and services    |
 | Frontend     | Next.js 16 App Router, React 19, TypeScript, responsive UI, and centralized API access                         |
 | Data         | PostgreSQL 16, Entity Framework Core migrations, UTC date normalization, and deterministic due-date ordering   |
-| Localization | English and Persian dictionaries, RTL presentation, and Gregorian/Jalali date selection                        |
+| Localization | English-first UI, Persian dictionaries, RTL presentation, and Gregorian/Jalali date selection                |
 | Quality      | xUnit unit tests, NSubstitute test doubles, coverage collection, linting, type-checking, and production builds |
-| Delivery     | Multi-stage Dockerfiles, Docker Compose orchestration, health checks, and GitHub Actions CI                    |
+| Delivery     | Render web services, Neon PostgreSQL, multi-stage Dockerfiles, Docker Compose, health checks, and GitHub Actions CI |
 
 ## Features
 
@@ -37,7 +39,7 @@ PlannerApp is an open-source, bilingual planning platform built to demonstrate p
 - Break each goal into yearly → monthly → weekly → daily plans.
 - Explore and manage the entire plan hierarchy from a tree view.
 - Order every returned list and nested tree level by due date.
-- Switch between English and Persian with RTL-aware presentation.
+- Start in English by default and switch to Persian with RTL-aware presentation.
 - Select dates using Gregorian or Jalali calendar values.
 - Normalize dates to UTC before PostgreSQL persistence.
 - Inspect and exercise the REST API through Swagger UI.
@@ -63,7 +65,23 @@ Dependencies point toward the domain and application abstractions. The API compo
 - **Persistence:** Entity Framework Core 9, Npgsql, PostgreSQL 16
 - **UI:** Next.js 16, React 19, TypeScript, Tailwind CSS 4
 - **Tests:** xUnit, NSubstitute, coverlet
-- **Delivery:** Docker, Docker Compose, GitHub Actions
+- **Delivery:** Render, Neon, Docker, Docker Compose, GitHub Actions
+
+## Live deployment
+
+The production demo is available at **https://plannerapp-web.onrender.com/**.
+
+| Component | Provider | Notes |
+| --- | --- | --- |
+| Next.js frontend | Render | Public web service built from `Dockerfile.ui` |
+| ASP.NET Core API | Render | Docker web service with `/health` monitoring |
+| PostgreSQL | Neon | Managed PostgreSQL with TLS-encrypted connections |
+
+Render injects each service's runtime port. The frontend receives the API URL through `NEXT_PUBLIC_API_URL`, while the API reads its Neon connection string and exact allowed frontend origin from Render environment variables. No production credentials are committed to the repository.
+
+This public site is a single-user portfolio demonstration without authentication or per-user data isolation. Use demonstration data only and do not enter personal, confidential, or sensitive information. Free Render services may need a short warm-up after a period of inactivity.
+
+See the [deployment guide](docs/DEPLOYMENT.md) for configuration, environment variables, health checks, and operational notes.
 
 ## Run with Docker
 
@@ -203,6 +221,7 @@ PlannerApp/
 ## Project documentation
 
 - [API reference](docs/API.md)
+- [Render and Neon deployment guide](docs/DEPLOYMENT.md)
 - [Engineering and refactoring notes](REFACTORING_SUMMARY.md)
 - [Documentation index](DOCUMENTATION_INDEX.md)
 - [MIT license](LICENSE)
@@ -217,7 +236,7 @@ GitHub social previews are configured in the repository's **Settings → General
 
 ## Scope and next steps
 
-PlannerApp is a portfolio project and currently assumes a trusted single-user environment. Authentication/authorization, observability, rate limiting, and integration/end-to-end tests are natural next steps before a public production deployment.
+PlannerApp is publicly accessible as a single-user portfolio demonstration, not a production multi-user service. It does not provide accounts or per-user data isolation, so visitors should use demonstration data only. Authentication/authorization, observability, rate limiting, automated backups, and integration/end-to-end tests are the main priorities before production use.
 
 ## License
 
