@@ -30,6 +30,14 @@ PlannerApp is an open-source, bilingual planning platform built to demonstrate p
 | Quality      | xUnit unit tests, NSubstitute test doubles, coverage collection, linting, type-checking, and production builds |
 | Delivery     | Render web services, Neon PostgreSQL, multi-stage Dockerfiles, Docker Compose, health checks, and GitHub Actions CI |
 
+## Motivation
+
+PlannerApp grew out of a personal need. I regularly break down long-term goals into yearly, monthly, weekly, and daily plans, but managing this hierarchy consistently became increasingly difficult.
+
+I built PlannerApp to turn that personal planning approach into a practical application—one that makes it easier to organize goals, monitor progress, and understand how everyday actions contribute to larger objectives.
+
+What began as a solution to my own workflow evolved into a full-stack project focused on usability, maintainable architecture, automated testing, localization, and production deployment.
+
 ## Features
 
 - Open a visual dashboard with total, active, completed, and overdue goal summaries.
